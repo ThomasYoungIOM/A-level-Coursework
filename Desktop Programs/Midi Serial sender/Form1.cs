@@ -217,7 +217,7 @@ namespace Midi_Serial_sender
                                 //Sytem control bytes, (varying databytes)
                                 switch (currentByte & 0x0f) {
                                     case 0x0f:
-                                        //If it's a FF byte, then that means a system is doing somthing funky and ya need to listen out for the F7 byte to single the end of the message
+                                        //If it's a FF byte, then that means a system is doing somthing funky and ya need to listen out for the F7 byte to signal the end of the message
 
                                         if (midiStream.ReadByte() == 0xff) {
                                             if(midiStream.ReadByte() == 0x2f) {
@@ -234,7 +234,7 @@ namespace Midi_Serial_sender
 
                             //If no status byte, then use status carry
                             default:
-                                lsvMidi.Items.Add("Status carry" + statusCarry);
+                                lsvMidi.Items.Add("Status carry byte: " + statusCarry);
                                 break;
                         }
                     } while (!end);
