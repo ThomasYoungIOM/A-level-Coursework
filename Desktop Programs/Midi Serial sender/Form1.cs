@@ -19,21 +19,21 @@ namespace Midi_Serial_sender
             
         }
 
-        SerialPort ardunioPort = new SerialPort("COM5", 31250);
+        SerialPort ardunioPort = new SerialPort("COM5", 31250);     //Save and configure the serial port to talk to the ardunio
                                                                       
         private void btnSend_Click(object sender, EventArgs e) {
-            ardunioPort.Open();
-            List<string> inputStrings = new List<string>();
-            List<byte> inputBytes = new List<byte>();
+            ardunioPort.Open();         //Open the ardunio port
+            List<string> inputStrings = new List<string>();     //The list that will store the data that will be sent to the ardunio in string form
+            List<byte> inputBytes = new List<byte>();           //The list that will store the data that will be sent to the ardunio in byte form
 
-            inputStrings = txtData.Text.Split(',').ToList<string>();
-            foreach (string byteToSend in inputStrings) {
-                inputBytes.Add(byte.Parse(byteToSend));
+            inputStrings = txtData.Text.Split(',').ToList<string>();        //Split the input string into the list
+            foreach (string byteToSend in inputStrings) {       //Loop through the string list and convert it all to bytes and add it to the byte list
+                inputBytes.Add(byte.Parse(byteToSend));         
             }
 
             
-            ardunioPort.Write(inputBytes.ToArray(),0,inputBytes.Count);
-            ardunioPort.Close();
+            ardunioPort.Write(inputBytes.ToArray(),0,inputBytes.Count);     //Write the bytes to the ardunio down the serial port
+            ardunioPort.Close();            //Close the serial port
         }
 
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)

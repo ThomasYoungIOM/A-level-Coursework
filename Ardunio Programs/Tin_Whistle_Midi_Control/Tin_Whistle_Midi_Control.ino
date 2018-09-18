@@ -12,7 +12,7 @@
 const int blowerPin = 9;
 
 //Varibles
-const byte servoOpenPos = 90;
+const byte servoOpenPos = 180;
 byte incommingByte = 0;   //Stores the byte received by the ardunio
 byte channelNumber = 0;   //Stores the channel that the ardunio is currently listening to
 byte currentNote = 0;     //Stores the note that the ardunio is currently playing. (For this application, 0 means that the ardnuio is not currently playing a note)
@@ -42,11 +42,12 @@ byte blowerSpeed[] = {255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255
 
 void setup() {
   //Set up the serial to receive midi
-  Serial.begin(31500);
+  Serial.begin(57600);
   
   //Loop through the sevo array and attach the servos to the pins on the ardunio
-  for(int i = 0; i < sizeof servos; i++) {
+  for(int i = 0; i < 6; i++) {
     servos[i].attach(i+2);    //Attach all of the servos from ardunio pin 2 to pin 7  (pins 0 and 1 are required for serial)
+    servos[i].write(servoOpenPos);    //Write all the servos to the open position
   }
   
   
@@ -57,6 +58,7 @@ void loop() {
   
   while (Serial.available()) {    //While there are some bytes in the buffer to read
     incommingByte = Serial.read();  //Receive byte
+    Serial.print("In: ");
     Serial.println(incommingByte);
     
     //What does the byte do? 
@@ -101,6 +103,8 @@ void loop() {
 
           case 0xf6:    //Tune request
             break;
+
+            
         }
       }
     } else {    //Else, if the byte is less than 0x80, then the byte is a databyte, and it will need to use the status carry.
@@ -122,22 +126,31 @@ void interperateStatusByte(byte statusByte) {
             case 0x9:   //Note on
 
               noteOn(Serial.read());      //Read the next byte to know what note to play and pass that to the function
-              Serial.println("noteOn");
               break;
 
             case 0xa:   //Polly phonic key pressure (Not used)
+              Serial.read();    //Read the bytes that we don't need out of the buffer
+              Serial.read();
               break;
 
             case 0xb:   //Control Change  (Maybe used? idk.)
+              Serial.read();    //Read the bytes that we don't need out of the buffer
+              Serial.read();
               break;
 
             case 0xc:   //Program Change  (Maybe used? idk.)
+              Serial.read();    //Read the bytes that we don't need out of the buffer
+              Serial.read();
               break;
 
             case 0xd:   //Channel pressure (Not used)
+              Serial.read();    //Read the bytes that we don't need out of the buffer
+              Serial.read();
               break;
 
             case 0xe:   //Pitch Bend (Not used)
+              Serial.read();    //Read the bytes that we don't need out of the buffer
+              Serial.read();
               break;
 
             
@@ -151,8 +164,11 @@ void interperateStatusByte(byte statusByte) {
 //Turns a note on
 void noteOn(byte note) {
   if(currentNote == 0) {   //Make sure that it's not already playing a note
+    byte velocity = Serial.read();
+    Serial.print("noteOn vel: ");
+    Serial.println(velocity);
     delay(1);
-    if(Serial.read() != 0) { //If the velocity is 0, then it should turn the note off instead
+    if(velocity != 0) { //If the velocity is 0, then it should turn the note off instead
       
       Serial.print("Playing Note: ");
       Serial.println(note);
@@ -245,6 +261,7 @@ void noteOn(byte note) {
     //Set airflow
       }
     } else {    //If the velocity is 0, then turn the note off instead
+      Serial.println("noteOff");
       noteOff(note);
     }
   }
@@ -257,8 +274,6 @@ void noteOff(byte note) {
   if(currentNote == note) {
     moveServos(new bool[6] {false,false,false,false,false,false}, 0);   //Tell the sub that all the servos should open, and the blower should turn off
   }
-  
-  //turn off airflow
 }
 
 
