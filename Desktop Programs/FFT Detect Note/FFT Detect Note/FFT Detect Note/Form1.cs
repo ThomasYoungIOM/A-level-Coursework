@@ -24,6 +24,7 @@ namespace FFT_Detect_Note {
 
             waveIn.DeviceNumber = 0;                            //The audio Device that will be listened to to collect audio
             waveIn.WaveFormat = new WaveFormat(44100, 1);       //Sets the file format to be used through hte program
+            waveIn.BufferMilliseconds = 400;                    //Set the buffer to be 200 milliseconds long
             waveIn.DataAvailable += audioDataAvailable;         //Whenever there is data available, run the audioDataAvailable sub
 
             waveIn.StartRecording();        //Starts listening to the audio input
@@ -39,28 +40,29 @@ namespace FFT_Detect_Note {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void audioDataAvailable(object sender, WaveInEventArgs e) {
-
-            ushort[] buffer = new ushort[4096];     //Array to store the incomming aduio signal
+            const byte downSampleFactor = 8;
+            short[] buffer = new short[4096];     //Array to store the incomming aduio signal
             Complex[] transformedValues = new Complex[buffer.Length];       //Array to store the complex numbers that have been spat out by the FFT
             double largestMagnitude = 0;        //Stores the largest magnitude that has been found
-            int biggestMagIndex;                //Stores the index of the largest magnitude that has been found
+            int biggestMagIndex = 0;                //Stores the index of the largest magnitude that has been found
 
             //If the buffer has enough data in, then fill the buffer and perform the FFT
-            if (e.BytesRecorded > buffer.Length) {
+            if (e.BytesRecorded > buffer.Length * 2) {
 
-                //Fill the buffer
-                for (int i = 0; i < buffer.Length; i+=2) {
-                    buffer[i/2] = Convert.ToUInt16((e.Buffer[i] << 8) | e.Buffer[i + 1]);     //The first byte is the Most significant part of the 16 bit byte that the sound is stored as, so bitshift it to the left and or the next byte to it
+                //Fill the buffer, but also skip every other point to down sample to improve the accurace of the FFT
+                for (int i = 0; i < (buffer.Length * downSampleFactor)-downSampleFactor; i+=downSampleFactor) {
+                    buffer[i/downSampleFactor] = (short)(Convert.ToUInt16(((e.Buffer[i]) | (e.Buffer[i + 1]<<8))));     //The first byte is the Most significant part of the 16 bit byte that the sound is stored as, so bitshift it to the left and or the next byte to it.
                 }
-                
-                
+
+                Array.Clear(e.Buffer,0,e.Buffer.Length);
+
 
 
                 //Perform FFT on buffer
                 transformedValues = fft(buffer);
 
                 //Find Maximum value
-                for (int i = 0; i < transformedValues.Length; i++) {            //Loop through the entire array of values
+                for (int i = 0; i < transformedValues.Length/2; i++) {            //Loop through half the arry of values because the transform only outputs half the number of inputs
                     if (transformedValues[i].Magnitude > largestMagnitude) {        //If the magnatude of the current number is bigger than the stored highest, then
                         largestMagnitude = transformedValues[i].Magnitude;          //Save the magnitude
                         biggestMagIndex = i;                                        //Save the location of the magnitude
@@ -68,7 +70,34 @@ namespace FFT_Detect_Note {
                 }
 
                 //Find Frequency of Max point
-                var heelo = 9;
+                if (InvokeRequired) {
+  
+                    this.Invoke(new MethodInvoker(delegate
+  
+                    {
+                        lblFFT.Text = biggestMagIndex.ToString();
+                    }));
+  
+                }
+
+                //If the number is too big, pause and have a look as to why
+                /*if(biggestMagIndex > 2000) {
+                    drawTimeGraph(buffer);
+                    var hello = 100;
+                }*/
+
+                
+
+  
+                else
+  
+                {
+                    lblFFT.Text = biggestMagIndex.ToString();
+
+                }
+
+
+                drawTimeGraph(buffer);
 
                 //Find note of that frequency
 
@@ -83,7 +112,7 @@ namespace FFT_Detect_Note {
         /// </summary>
         /// <param name="inputArr">The uShort array of audio values to be transformed</param>
         /// <returns>Array of complex numbers that are the output fo the transformation</returns>
-        private Complex[] fft(ushort[] inputArr) {
+        private Complex[] fft(short[] inputArr) {
             Complex[] inputComp = new Complex[inputArr.Length];     //Array to store the complex numbers that will be inputted to the FFT
             Complex[] outputComp = new Complex[inputArr.Length];    //Array to store the complex numbers that will be outputted from the FFT
 
@@ -105,6 +134,29 @@ namespace FFT_Detect_Note {
         }
 
 
+        #region Temp Graph Code
 
-    }
+        void drawTimeGraph(short[] inBuffer) {
+
+            picGraph.Image = null;
+
+            using (Graphics g = picGraph.CreateGraphics()) {
+
+                Pen plotter = new Pen(Brushes.Black);                
+
+                for (int i = 0; i < inBuffer.Length; i++) {
+                    g.DrawEllipse(plotter, i, 255-(Convert.ToInt32(inBuffer[i])/128), 1, 1);
+                }
+                }
+            }
+
+        }
+
+
+
+
+
+
+        #endregion
 }
+

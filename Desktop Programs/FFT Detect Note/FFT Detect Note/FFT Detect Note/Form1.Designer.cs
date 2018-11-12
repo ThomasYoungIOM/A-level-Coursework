@@ -26,6 +26,9 @@
             this.btnStart = new System.Windows.Forms.Button();
             this.lblFreq = new System.Windows.Forms.Label();
             this.lblNote = new System.Windows.Forms.Label();
+            this.picGraph = new System.Windows.Forms.PictureBox();
+            this.lblFFT = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.picGraph)).BeginInit();
             this.SuspendLayout();
             // 
             // btnStart
@@ -56,16 +59,36 @@
             this.lblNote.TabIndex = 2;
             this.lblNote.Text = "Current Note: ";
             // 
+            // picGraph
+            // 
+            this.picGraph.Location = new System.Drawing.Point(15, 102);
+            this.picGraph.Name = "picGraph";
+            this.picGraph.Size = new System.Drawing.Size(1024, 585);
+            this.picGraph.TabIndex = 3;
+            this.picGraph.TabStop = false;
+            // 
+            // lblFFT
+            // 
+            this.lblFFT.AutoSize = true;
+            this.lblFFT.Location = new System.Drawing.Point(142, 53);
+            this.lblFFT.Name = "lblFFT";
+            this.lblFFT.Size = new System.Drawing.Size(36, 13);
+            this.lblFFT.TabIndex = 4;
+            this.lblFFT.Text = "lblFFT";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(190, 161);
+            this.ClientSize = new System.Drawing.Size(1300, 858);
+            this.Controls.Add(this.lblFFT);
+            this.Controls.Add(this.picGraph);
             this.Controls.Add(this.lblNote);
             this.Controls.Add(this.lblFreq);
             this.Controls.Add(this.btnStart);
             this.Name = "Form1";
             this.Text = "Form1";
+            ((System.ComponentModel.ISupportInitialize)(this.picGraph)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -76,6 +99,8 @@
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Label lblFreq;
         private System.Windows.Forms.Label lblNote;
+        private System.Windows.Forms.PictureBox picGraph;
+        private System.Windows.Forms.Label lblFFT;
     }
 }
 

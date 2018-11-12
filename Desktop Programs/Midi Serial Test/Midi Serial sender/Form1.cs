@@ -189,19 +189,19 @@ namespace Midi_Serial_sender
                 switch ((controlByte & 0xF0) / 0x10) {        //Use the and bitwise operator to only select the left most nibble, then devide by Hex 10 to get the first nibble only
                     case 0x8:
                         //Note off (2 data bytes)
-                        lsvMidi.Items.Add($"Note off Ch: {controlByte & 0x0F} Note:{firstDataByte}  Velocity: {Convert.ToByte(midiStream.ReadByte())}");
+                        lsvMidi.Items.Add($"Time: {deltaTime} Note off Ch: {controlByte & 0x0F} Note:{firstDataByte}  Velocity: {Convert.ToByte(midiStream.ReadByte())}");
                         statusCarry = controlByte;
                         break;
 
                     case 0x9:
                         //Note on   (2data bytes)
-                        lsvMidi.Items.Add($"Note on Ch: {controlByte & 0x0F} Note:{firstDataByte} Velocity: {Convert.ToByte(midiStream.ReadByte())}");
+                        lsvMidi.Items.Add($"Time: {deltaTime} Note on Ch: {controlByte & 0x0F} Note:{firstDataByte} Velocity: {Convert.ToByte(midiStream.ReadByte())}");
                         statusCarry = controlByte;
                         break;
 
                     case 0xa:
                         //"Polly phonic after touch" (2 data bytes)
-                        lsvMidi.Items.Add($"PollyPhonic Ch: {controlByte & 0x0F} Note:{firstDataByte} Velocity: {Convert.ToByte(midiStream.ReadByte())}");
+                        lsvMidi.Items.Add($"Time: {deltaTime} PollyPhonic Ch: {controlByte & 0x0F} Note:{firstDataByte} Velocity: {Convert.ToByte(midiStream.ReadByte())}");
                         statusCarry = controlByte;
                         break;
 
@@ -215,19 +215,19 @@ namespace Midi_Serial_sender
 
                     case 0xc:
                         //Chan Program Change           (1 data byte)
-                        lsvMidi.Items.Add($"ChanProgram change Ch: {controlByte & 0x0F} New instument: {firstDataByte}");
+                        lsvMidi.Items.Add($"Time: {deltaTime} ChanProgram change Ch: {controlByte & 0x0F} New instument: {firstDataByte}");
                         statusCarry = controlByte;
                         break;
 
                     case 0xd:
                         //Chanel after touch    (1 data byte)
-                        lsvMidi.Items.Add($"Channel aftertouch Ch: {controlByte & 0x0F} Data (volume, idk): {firstDataByte}");
+                        lsvMidi.Items.Add($"Time: {deltaTime} Channel aftertouch Ch: {controlByte & 0x0F} Data (volume, idk): {firstDataByte}");
                         statusCarry = controlByte;
                         break;
 
                     case 0xe:
                         //Pitch bend (2 data bytes)
-                        lsvMidi.Items.Add($"PitchBend Ch: {controlByte & 0x0F} Data1:{firstDataByte} Data2: {Convert.ToByte(midiStream.ReadByte())}");
+                        lsvMidi.Items.Add($"Time: {deltaTime} PitchBend Ch: {controlByte & 0x0F} Data1:{firstDataByte} Data2: {Convert.ToByte(midiStream.ReadByte())}");
                         statusCarry = controlByte;
                         break;
 
