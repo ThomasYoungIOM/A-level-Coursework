@@ -92,7 +92,7 @@ namespace Midi_Serial_sender
             byte trackFormat;   //Either 0, 1 or 2
             int numOfTracks;    //Number of track chunks in the file
             int ticksPerNote;   //Speed of the thingy
-            long deltaTime = 0;
+            int deltaTime = 0;
             bool end = false;           //Has the end been reached?
 
             //Header Chunk
@@ -186,7 +186,7 @@ namespace Midi_Serial_sender
 
             void interpretStatusByte(byte controlByte, byte firstDataByte) {
 
-                switch ((controlByte & 0xF0) / 0x10) {        //Use the and bitwise operator to only select the left most nibble, then devide by Hex 10 to get the first nibble only
+                switch ((controlByte & 0xF0) >> 4) {        //Use the and bitwise operator to only select the left most nibble, then bitshift right to get left mot nibble only
                     case 0x8:
                         //Note off (2 data bytes)
                         lsvMidi.Items.Add($"Time: {deltaTime} Note off Ch: {controlByte & 0x0F} Note:{firstDataByte}  Velocity: {Convert.ToByte(midiStream.ReadByte())}");
@@ -208,8 +208,6 @@ namespace Midi_Serial_sender
                     case 0xb:
                         //Chan mode control thingys.    (2data bytes)
                         midiStream.ReadByte();
-
-
                         statusCarry = controlByte;
                         break;
 
@@ -259,9 +257,6 @@ namespace Midi_Serial_sender
                                 }
 
                                 break;
-
-
-
 
                             default:
                                 break;
