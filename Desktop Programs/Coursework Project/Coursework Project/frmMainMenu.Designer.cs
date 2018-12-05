@@ -220,12 +220,13 @@
             // 
             // btnLoadMidi
             // 
-            this.btnLoadMidi.Location = new System.Drawing.Point(17, 170);
+            this.btnLoadMidi.Location = new System.Drawing.Point(17, 160);
             this.btnLoadMidi.Name = "btnLoadMidi";
             this.btnLoadMidi.Size = new System.Drawing.Size(240, 47);
             this.btnLoadMidi.TabIndex = 11;
             this.btnLoadMidi.Text = "Load Exercise";
             this.btnLoadMidi.UseVisualStyleBackColor = true;
+            this.btnLoadMidi.Click += new System.EventHandler(this.btnLoadMidi_Click);
             // 
             // frmMainMenu
             // 

@@ -88,7 +88,7 @@ namespace Midi_Serial_sender
             byte statusCarry = 0;   //Last status byte that may be used for a status carry
             byte currentByte;   //Value of the byte currently being processed
             byte eventLength;   //Used to store the length of commands that are not a set length eg SysEx messages or Meta Events
-            bool error = false; //
+            //bool error = false; //
             byte trackFormat;   //Either 0, 1 or 2
             int numOfTracks;    //Number of track chunks in the file
             int ticksPerNote;   //Speed of the thingy
@@ -161,6 +161,7 @@ namespace Midi_Serial_sender
                             currentByte = Convert.ToByte(midiStream.ReadByte());
                         }
 
+
                         deltaTime = (deltaTime << 7) + (currentByte);                 //Bit shift the time data left 7, then add the current byte, knowing that bit 8 will be 0 cuz it's the last byte
 
 
@@ -186,7 +187,7 @@ namespace Midi_Serial_sender
 
             void interpretStatusByte(byte controlByte, byte firstDataByte) {
 
-                switch ((controlByte & 0xF0) >> 4) {        //Use the and bitwise operator to only select the left most nibble, then bitshift right to get left mot nibble only
+                switch ((controlByte & 0xF0) >> 4) {        //Use the and bitwise operator to only select the left most nibble, then bitshift right to get left most nibble only
                     case 0x8:
                         //Note off (2 data bytes)
                         lsvMidi.Items.Add($"Time: {deltaTime} Note off Ch: {controlByte & 0x0F} Note:{firstDataByte}  Velocity: {Convert.ToByte(midiStream.ReadByte())}");
