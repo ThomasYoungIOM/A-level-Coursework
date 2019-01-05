@@ -37,12 +37,13 @@
             this.lsvMidi = new System.Windows.Forms.ListView();
             this.btnLsvTest = new System.Windows.Forms.Button();
             this.btnMidiToLSV = new System.Windows.Forms.Button();
+            this.btnColourForm = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // txtData
             // 
             this.txtData.Location = new System.Drawing.Point(9, 24);
-            this.txtData.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtData.Margin = new System.Windows.Forms.Padding(2);
             this.txtData.Multiline = true;
             this.txtData.Name = "txtData";
             this.txtData.Size = new System.Drawing.Size(194, 118);
@@ -61,7 +62,7 @@
             // btnSend
             // 
             this.btnSend.Location = new System.Drawing.Point(146, 5);
-            this.btnSend.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSend.Margin = new System.Windows.Forms.Padding(2);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(56, 19);
             this.btnSend.TabIndex = 2;
@@ -79,7 +80,7 @@
             // btnOpenFile
             // 
             this.btnOpenFile.Location = new System.Drawing.Point(238, 24);
-            this.btnOpenFile.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnOpenFile.Margin = new System.Windows.Forms.Padding(2);
             this.btnOpenFile.Name = "btnOpenFile";
             this.btnOpenFile.Size = new System.Drawing.Size(76, 19);
             this.btnOpenFile.TabIndex = 3;
@@ -90,7 +91,7 @@
             // txtMidiFileOutput
             // 
             this.txtMidiFileOutput.Location = new System.Drawing.Point(346, 24);
-            this.txtMidiFileOutput.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtMidiFileOutput.Margin = new System.Windows.Forms.Padding(2);
             this.txtMidiFileOutput.Multiline = true;
             this.txtMidiFileOutput.Name = "txtMidiFileOutput";
             this.txtMidiFileOutput.Size = new System.Drawing.Size(601, 118);
@@ -100,7 +101,7 @@
             // 
             this.lsvMidi.AutoArrange = false;
             this.lsvMidi.Location = new System.Drawing.Point(11, 158);
-            this.lsvMidi.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lsvMidi.Margin = new System.Windows.Forms.Padding(2);
             this.lsvMidi.Name = "lsvMidi";
             this.lsvMidi.Size = new System.Drawing.Size(936, 412);
             this.lsvMidi.TabIndex = 5;
@@ -110,7 +111,7 @@
             // btnLsvTest
             // 
             this.btnLsvTest.Location = new System.Drawing.Point(206, 122);
-            this.btnLsvTest.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnLsvTest.Margin = new System.Windows.Forms.Padding(2);
             this.btnLsvTest.Name = "btnLsvTest";
             this.btnLsvTest.Size = new System.Drawing.Size(56, 19);
             this.btnLsvTest.TabIndex = 6;
@@ -121,7 +122,7 @@
             // btnMidiToLSV
             // 
             this.btnMidiToLSV.Location = new System.Drawing.Point(267, 122);
-            this.btnMidiToLSV.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnMidiToLSV.Margin = new System.Windows.Forms.Padding(2);
             this.btnMidiToLSV.Name = "btnMidiToLSV";
             this.btnMidiToLSV.Size = new System.Drawing.Size(64, 26);
             this.btnMidiToLSV.TabIndex = 7;
@@ -129,11 +130,22 @@
             this.btnMidiToLSV.UseVisualStyleBackColor = true;
             this.btnMidiToLSV.Click += new System.EventHandler(this.btnMidiToLSV_Click);
             // 
+            // btnColourForm
+            // 
+            this.btnColourForm.Location = new System.Drawing.Point(238, 69);
+            this.btnColourForm.Name = "btnColourForm";
+            this.btnColourForm.Size = new System.Drawing.Size(75, 23);
+            this.btnColourForm.TabIndex = 8;
+            this.btnColourForm.Text = "Next form";
+            this.btnColourForm.UseVisualStyleBackColor = true;
+            this.btnColourForm.Click += new System.EventHandler(this.btnColourForm_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(958, 581);
+            this.Controls.Add(this.btnColourForm);
             this.Controls.Add(this.btnMidiToLSV);
             this.Controls.Add(this.btnLsvTest);
             this.Controls.Add(this.lsvMidi);
@@ -142,7 +154,7 @@
             this.Controls.Add(this.btnSend);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtData);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);
@@ -161,6 +173,7 @@
         private System.Windows.Forms.ListView lsvMidi;
         private System.Windows.Forms.Button btnLsvTest;
         private System.Windows.Forms.Button btnMidiToLSV;
+        private System.Windows.Forms.Button btnColourForm;
     }
 }
 

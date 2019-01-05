@@ -27,6 +27,8 @@
             this.btnOpenWav = new System.Windows.Forms.Button();
             this.ofdWavFile = new System.Windows.Forms.OpenFileDialog();
             this.picOutput = new System.Windows.Forms.PictureBox();
+            this.txtOutput = new System.Windows.Forms.TextBox();
+            this.btnDrawValues = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picOutput)).BeginInit();
             this.SuspendLayout();
             // 
@@ -52,22 +54,49 @@
             // 
             // ofdWavFile
             // 
-            this.ofdWavFile.InitialDirectory = "C:\\Users\\Thomas\\source\\repos\\A-level-Coursework\\Desktop Programs\\FFT File Analysi" +
+            this.ofdWavFile.Filter = "All files (*.*) |*.*";
+            this.ofdWavFile.InitialDirectory = "C:\\Users\\Thomas\\source\\repos\\A-level Coursework\\Desktop Programs\\FFT File Analysi" +
     "s\\FFT File Analysis\\bin\\Debug\\Wav Files";
             // 
             // picOutput
             // 
+            this.picOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.picOutput.Location = new System.Drawing.Point(13, 69);
             this.picOutput.Name = "picOutput";
             this.picOutput.Size = new System.Drawing.Size(1024, 512);
+            this.picOutput.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.picOutput.TabIndex = 2;
             this.picOutput.TabStop = false;
+            // 
+            // txtOutput
+            // 
+            this.txtOutput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtOutput.Location = new System.Drawing.Point(225, 12);
+            this.txtOutput.Multiline = true;
+            this.txtOutput.Name = "txtOutput";
+            this.txtOutput.Size = new System.Drawing.Size(808, 50);
+            this.txtOutput.TabIndex = 3;
+            // 
+            // btnDrawValues
+            // 
+            this.btnDrawValues.Location = new System.Drawing.Point(130, 40);
+            this.btnDrawValues.Name = "btnDrawValues";
+            this.btnDrawValues.Size = new System.Drawing.Size(75, 23);
+            this.btnDrawValues.TabIndex = 4;
+            this.btnDrawValues.Text = "Draw Values";
+            this.btnDrawValues.UseVisualStyleBackColor = true;
+            this.btnDrawValues.Click += new System.EventHandler(this.btnDrawValues_Click);
             // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1045, 586);
+            this.Controls.Add(this.btnDrawValues);
+            this.Controls.Add(this.txtOutput);
             this.Controls.Add(this.picOutput);
             this.Controls.Add(this.btnOpenWav);
             this.Controls.Add(this.btnRec);
@@ -75,6 +104,7 @@
             this.Text = "Main Form";
             ((System.ComponentModel.ISupportInitialize)(this.picOutput)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -84,6 +114,8 @@
         private System.Windows.Forms.Button btnOpenWav;
         private System.Windows.Forms.OpenFileDialog ofdWavFile;
         private System.Windows.Forms.PictureBox picOutput;
+        private System.Windows.Forms.TextBox txtOutput;
+        private System.Windows.Forms.Button btnDrawValues;
     }
 }
 

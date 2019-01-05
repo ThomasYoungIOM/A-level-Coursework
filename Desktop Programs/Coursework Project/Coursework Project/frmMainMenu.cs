@@ -34,7 +34,7 @@ namespace Coursework_Project {
             #endregion
 
             //Check all the files in the database to see if they are there
-            checkDatabaseFiles(databaseInterface);
+            CheckDatabaseFiles(databaseInterface);
 
             //Get a list of all of the instruments of the availble exercises and adds them to the Combo box view. 
             currentCommand = new SqlCommand("SELECT DISTINCT Instrument FROM Exercises WHERE FileExists = 1 INTERSECT SELECT DISTINCT Instrument FROM Notes");      //This command gets a list of all of the instruments that can be found in the Exercises table AND in the notes table. This ensures that there will be no exercises selected for which there aren't any defininitions for that instrument
@@ -71,15 +71,21 @@ namespace Coursework_Project {
         /// Instaniats frmSheetMusic and passes the file path to the selected MIDI file across
         /// </summary>
         private void btnLookAtMusic_Click(object sender, EventArgs e) {
-            //Make sure the user has selected an exercise
-            if (dgvExercises.SelectedRows != null) {
-                //Run the form
-            } else {
-                MessageBox.Show("Please select an exercise to display first");
-            }
+            //Make sure the user has loaded an exercise
+            if (loadedFile != null) {
+                frmViewMusic viewForm = new frmViewMusic(loadedFile);
+                viewForm.Show();
+            } else
+                MessageBox.Show("Please load an exercise");
         }
 
 
+
+        /// <summary>
+        /// Loads the currentet
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnLoadMidi_Click(object sender, EventArgs e) {
             string errorString;         //Stores the error message incase the file cannot be parsed
             string midiFilePath;        //Stores the file path for the exerise
@@ -89,17 +95,18 @@ namespace Coursework_Project {
             midiFilePath = (string)dgvExercises.SelectedRows[0].Cells["filePath"].Value;  //Get midi path from dgv
 
             try {
-                midiStream = File.Open(midiFilePath,FileMode.Open);    //Open file into a stream
+                using (midiStream = File.Open(midiFilePath, FileMode.Open)) {    //Open file into a stream
 
-                parseSucessful = parseMidiFile(midiStream, out loadedFile, out errorString);         //Parse the MIDI file and set it to the loaded file
+                    parseSucessful = ParseMidiFile(midiStream, out loadedFile, out errorString);         //Parse the MIDI file and set it to the loaded file
 
+                }
                 //If there was an error, tell the user
                 if (!parseSucessful) {
-                    MessageBox.Show("The file could not be Loaded. Please try another file.","MIDI Parse Error");
+                    MessageBox.Show($"The file could not be Loaded. Please try another file. {errorString}","MIDI Parse Error");
                 }
 
             } catch (Exception ex) {
-                MessageBox.Show($"Sorry, that file could not be opened. Please try again or select a different Exercise. /n {ex}");
+                MessageBox.Show($"Sorry, that file could not be opened. Please try again or select a different Exercise. {ex}");
             }
         }          
 
@@ -110,7 +117,7 @@ namespace Coursework_Project {
             /// <summary>
             /// Closes the program
             /// </summary>
-            private void btnQuit_Click(object sender, EventArgs e) {
+            private void BtnQuit_Click(object sender, EventArgs e) {
             Application.Exit();
         }
 
@@ -122,7 +129,7 @@ namespace Coursework_Project {
         /// Checks the database to see if the files can be found. If a file cannot be found, it's "FileExists" row will be set to 0, else it will be set to 1 to show it does exist.
         /// </summary>
         /// <param name="databaseToCheck">The database interface that will be searched</param>
-        private void checkDatabaseFiles(databaseInterface databaseToCheck) {
+        private void CheckDatabaseFiles(databaseInterface databaseToCheck) {
             SqlCommand currentCommand;
             List<string> filesNotFound = new List<string>();        //Stores the list of file paths that do not have files at the other end
             string currentFilePath;                                 //Stores the file path that is currently being checked to see if it exsists
@@ -154,13 +161,19 @@ namespace Coursework_Project {
                  * In this statement, the parametised values will be the file paths of files that could not be found
                  */
 
-                generatedSqlString = "UPDATE Exercises SET FileExists = CASE WHEN FilePath IN(NULL";      //The first part of the SQL Statement that will update the database depedning if the files are availible (A default null value is added, so if all files are found, the database is still updated)
+                generatedSqlString = "UPDATE Exercises SET FileExists = CASE WHEN FilePath IN( ";      //The first part of the SQL Statement that will update the database depedning if the files are availible (A default null value is added, so if all files are found, the database is still updated)
 
-                //Loop through the list of files that have not been found
-                for (int i = 0; i < filesNotFound.Count; i++) {
-                    generatedSqlString += $" @{i},";                                         //Add a paramenter to the end of the statement string. eg: " @5,"
-                    currentCommand.Parameters.AddWithValue($"@{i}", filesNotFound[i]);      //Add the parameter and the value that the parameter will assume to the command object which will be passed to the database interface
+
+                if (filesNotFound.Count != 0) {
+                    //Loop through the list of files that have not been found
+                    for (int i = 0; i < filesNotFound.Count; i++) {
+                        generatedSqlString += $" @{i},";                                         //Add a paramenter to the end of the statement string. eg: " @5,"
+                        currentCommand.Parameters.AddWithValue($"@{i}", filesNotFound[i]);      //Add the parameter and the value that the parameter will assume to the command object which will be passed to the database interface
+                    }
+                } else {
+                    generatedSqlString += "NULL";   //If there are not files to update, then set it to null
                 }
+                
 
                 generatedSqlString = generatedSqlString.TrimEnd(new char[]{','});                    //Remove the last comma from the string, since it will be the unecerssary comma from the for loop
                 generatedSqlString += ") THEN 0 ELSE 1 END;";       //Finish off the SQL Statement
@@ -171,7 +184,6 @@ namespace Coursework_Project {
             }
         }
 
-
         /// <summary>
         /// Parses the MIDI file into the midiFile class
         /// </summary>
@@ -179,7 +191,7 @@ namespace Coursework_Project {
         /// <param name="outputMidiFile">The MIDI File class that will be outputted filled with data</param>
         /// <param name="errorString">In case the file could not be parsed, then this will contain the error</param>
         /// <returns>Returns whether the parse was sucsessful</returns>
-        private bool parseMidiFile(Stream midiStream, out midiFile outputMidiFile, out string errorString) {
+        private bool ParseMidiFile(Stream midiStream, out midiFile outputMidiFile, out string errorString) {
             #region Variables
             byte currentbyte;   //Stores the current byte being processed
             byte statusCarry;   //Stores the last status byte for use by status carry
@@ -189,7 +201,7 @@ namespace Coursework_Project {
             outputMidiFile = null;        //Stores the parsed midiFile
             errorString = null;             //Stores any error messages that are generated
 
-            List<notes> listOfNotes;        //List to store the parsed notes
+            List<note> listOfNotes;        //List to store the parsed notes
 
             ushort format;      //Stores the Midi file's format. (The program can only deal with format 0 MIDI files)
             ushort numOfTracks; //Store the number of track chuhnks to be found in the file. Should be 1 for Format 0 files
@@ -231,11 +243,14 @@ namespace Coursework_Project {
             } else if (currentChunkLength != 6) {
                 errorString = "Head Chunk invalid length";
                 return false;
-            } else if (format != 0){
+            } else if (format != 0 & format != 1){
                 errorString = "Format not valid";
                 return false;
             } else if (numOfTracks != 1) {
                 errorString = "Invalid number of Track Chunks";
+                return false;
+            } else if (division > 0x8000) {
+                errorString = "Invalid division format";
                 return false;
             }
 
@@ -260,45 +275,71 @@ namespace Coursework_Project {
             }
 
             //Read MIDI Track Data. If the track data could not be read properly, end the function
-            if(!readTrackData(midiStream, currentChunkLength, out listOfNotes, out errorString))
+            if(!ReadTrackData(midiStream, currentChunkLength, out listOfNotes, out errorString))
                 return false;
-            
 
             #endregion
+
+            //Create the new midiFile and assign it the values that have been read from the stream
+            outputMidiFile = new midiFile(division, null, null, null, listOfNotes);
+
+            //Un-grey out the buttons to allow the people to choose other forms
+            btnLookAtMusic.Enabled = true;
+            btnPractice.Enabled = true;
+            btnTest.Enabled = true;
 
             return true;
         }
 
-        private bool readTrackData(Stream midiStream, uint currentChunkLength, out List<notes> listOfNotes, out string errorString) {
+        /// <summary>
+        /// Reads the data from the class and outputs a list of notes
+        /// </summary>
+        /// <param name="midiStream">The Stream to read the track chunk from</param>
+        /// <param name="currentChunkLength">The length of the chunk being read</param>
+        /// <param name="listOfNotes">The list of notes that will be output</param>
+        /// <param name="errorString">To store any errors that may occur</param>
+        /// <returns>Wheather it was sucessfull</returns>
+        private bool ReadTrackData(Stream midiStream, uint currentChunkLength, out List<note> listOfNotes, out string errorString) {
             byte currentByte;       //Store the byte currently being processed
             byte statusByte;        //Stores the status byte that 
             byte firstDatabyte;     //Stores the first databyte of the current command
             byte statusCarry = 0;   //Store the last status byte for status carry to be used
             bool end = false;       //Stores whether the end of the chunk has been reached
-            int currentDeltaTime = 0;   //Stores the current delta time that will be stored
-            int currentNoteLength;
-            byte currentNote;       //Stores the current note that is being played
+            bool readingNote = false;//Stores whether the there is currently a note being read or not
+            int currentAbsoluteTime = 0;   //Stores the current absolute time
+            int currentNoteLength = 0;
+            int currentGapLength = 0;   //Stotres the time since the last note off event
+            byte currentNote = 0;   //Stores the current note that is being played
+            int lastAbsoluteTime = 0;
+            int count = 0;      //TEMP COUNTER FOR DEBUGGING @@
+            int currentStausLength;     //Stores the length of the current status thing be it a f0,f7 or a meta mesage
 
-            
+            listOfNotes = new List<note>();
 
-            listOfNotes = null;     //Makes sure somthing is assigned to the list of notes
             errorString = "";       //Makes sure somthing is assigned to the error string
 
 
             //Loop util the end of the track
             do {
+                count++;    // @@ TEMP COUNTER FOR DEBUGGINS
 
-                //Read the deltaTime value
-                currentDeltaTime = (currentDeltaTime << 8) + GetVaribleLength(midiStream);
+
+                //If there is a note being read currently, then add the read deltatime to the current delta time and the length of the note, else, just add it to the current delta time to store when the next note should start
+                if (readingNote)
+                    currentAbsoluteTime += currentNoteLength += GetVaribleLength(midiStream, (byte)midiStream.ReadByte());      //@@ Check Works
+                else
+                    currentAbsoluteTime += currentGapLength += GetVaribleLength(midiStream, (byte)midiStream.ReadByte());
+                    
+               
 
                 currentByte = (byte)midiStream.ReadByte();
 
-                //Interprate the status byte.
 
+                //Interprate the status byte.
                 //If the current byte is not a status byte, then assign the status carry to the command byte and the current byte to the first databyte
                 if (currentByte < 0x80) {
-                    firstDatabyte = currentByte;
                     statusByte = statusCarry;
+                    firstDatabyte = currentByte;
 
                     //Else assign the current byte to the status byte and read a new byte that will be the first data byte
                 } else {
@@ -314,182 +355,132 @@ namespace Coursework_Project {
 
                     case 0x80:  //Note off (2 data bytes)
                                 //create the note with the specified length
-                        listOfNotes.Add(new notes(currentDeltaTime, statusByte, );
+                        listOfNotes.Add(new note(lastAbsoluteTime, currentNote, currentNoteLength));
+                        lastAbsoluteTime = currentAbsoluteTime;
+                        readingNote = false;
+
+                        midiStream.ReadByte();  //Read the velocity (Unused)
                         break;
 
 
                     case 0x90:  //Note on (2 data bytes)
-                                //save the previous note
-                                //Create the new note and start the counting again
+                        if (midiStream.ReadByte() == 0) {  //If the velocity is zero, then the treat it as a note off event
+
+                            listOfNotes.Add(new note(lastAbsoluteTime, currentNote, currentNoteLength));
+                            lastAbsoluteTime = currentAbsoluteTime;
+                            readingNote = false;
+
+                        } else {    //Else treat it like a note on event
+
+                            //Save the gap to the list with a note value of 0 so be the rest
+                            listOfNotes.Add(new note(lastAbsoluteTime, 0, currentGapLength));
+
+
+
+                            lastAbsoluteTime = currentAbsoluteTime;   //Set the last delta time which will be used to give the note that is being made a deltatime
+                            currentNoteLength = 0;              //restart the current note length
+                            currentNote = firstDatabyte;        //Save the pitch of the note being played
+                            readingNote = true;                 //So the program knows that a note is being read
+                        }
+
                         break;
 
                     case 0xa0:  //"Polly phonic after touch" (2 data bytes)
-                                
+                        midiStream.ReadByte();     //Read the next byte from the buffer that will not be used
                         break;
 
                     case 0xb0:  //Chan mode control thingys.    (2data bytes)
-
-                        midiStream.ReadByte();
+                        midiStream.ReadByte();     //Read the next byte from the buffer that will not be used
                         break;
 
                     case 0xc0:  //Chan Program Change           (1 data byte)
-
                         break;
 
                     case 0xd0:  //Chanel after touch    (1 data byte)
-
                         break;
 
                     case 0xe0:  //Pitch bend (2 data bytes)
-
+                        midiStream.ReadByte();     //Read the next byte from the buffer that will not be used
                         break;
 
                     case 0xf0:  //Meta event (Varing databytes)
 
+                        //If the current message is a sysex message, then read all of the bytes from the stream. Format: F0/F7 <Varible length> <databytes>
+                        if (statusByte == 0xF0 || statusByte == 0xF7) {
+                            //Loop through to the length of the message and dequeue the databytes
+                            for (int i = 0; i < GetVaribleLength(midiStream, firstDatabyte); i++)
+                                midiStream.ReadByte();
+
+                        } else if (statusByte == 0xFF) {     //Else if the status byte is a system control byte
+                            //If the first databyte is 2F, then it's the end of track singnal and the sub should end
+                            if (firstDatabyte == 0x2F) { 
+                                return true;
+                            } else {        //Else, it's not needed and it should be read to the end
+                                currentStausLength = GetVaribleLength(midiStream, (byte)midiStream.ReadByte());
+                                for (int i = 0; i < currentStausLength; i++)
+                                    midiStream.ReadByte();
+                            }
+
+                        } else {        //Else, if the F_ byte is not recognised, then throw an error
+                            errorString = "Unknown F_ byte";
+                            return false;
+                        }
+
                         break;
+
                     default:
-                        break;
+                        errorString = "Unknown status byte";
+                        return false;
                 }
 
                 //If the current byte is not a meta command, then set the status carry to the current byte
                 if (currentByte < 0xf0)
-                    statusCarry = currentByte;
+                    statusCarry = statusByte;
 
 
 
 
             } while (!end);
 
-            /*currentByte = (byte)midiStream.ReadByte();
-
-            //If the current byte is less than 0x80, then it is a databyte and status carry should be used to determine what note should be played, else, the current byte is the status byte
-            if (currentByte < 0x80) {
-
-                //If there is nothing in the status carry, then we've got ourselves an error
-                if (statusCarry == 0) {
-                    errorString = "Status carry called when empty";
-                    return false;
-                }
-
-                
-
-
-            } else {
-
-            }*/
-
-
-
-
-
-
 
             return true;
         }
-
-
-        /// <summary>
-        /// Sub to interprate the status byte and the subsequenct databytes and act upon them. If the byte was a note on event, 
-        /// </summary>
-        /// <param name="statusByte">The status byte that is to be looked at</param>
-        /// <param name="firstDataByte">The first databyte to look at</param>
-        /// <param name="midiStream">The stream that is being read</param>
-        /// <param name="errorString">Outs any error messages that may have occured</param>
-        /// <returns>Returns whether the execution was sucsessfull</returns>
-        private bool InterpretStatusByte(byte statusByte, byte firstDataByte, Stream midiStream, out string errorString) {
-            errorString = null;
-
-             switch ((statusByte & 0xF0) >> 4) {        //Use the and bitwise operator to only select the left most nibble, then bitshift right to get left most nibble only
-                 case 0x8:
-                     //Note off (2 data bytes)
-                     break;
-
-                 case 0x9:
-                     //Note on   (2data bytes)
-                     break;
-
-                 case 0xa:
-                     //"Polly phonic after touch" (2 data bytes)
-                     break;
-
-                 case 0xb:
-                     //Chan mode control thingys.    (2data bytes)
-                     midiStream.ReadByte();
-                     break;
-
-                 case 0xc:
-                     //Chan Program Change           (1 data byte)
-                     break;
-
-                 case 0xd:
-                     //Chanel after touch    (1 data byte)
-                     break;
-
-                 case 0xe:
-                     //Pitch bend (2 data bytes)
-                     break;
-
-                 case 0xf:
-                     //Sytem control bytes, (varying databytes)
-                     switch (statusByte & 0x0f) {
-                         case 0x0f:
-                             //If it's a FF byte, it's a meta event and so it'll follow the format: FF <type> <length> <bytes> 
-                             //(Found on page 136 of Referance 1, Complete midi specifation)
-
-
-                             currentByte = firstDataByte;
-                             eventLength = Convert.ToByte(midiStream.ReadByte());
-
-                             //Read the next byte that will include the type of system control byte that's being dealt with
-                             switch (currentByte) {
-                                 //End of file message
-                                 case 0x2f:
-                                     end = true;
-                                     break;
-
-                                 //Meta-event not included
-                                 default:
-                                     //If the meta event is not used, then just read to the end of it based on the length of the message
-                                     for (int i = 0; i < eventLength; i++) {
-                                         midiStream.ReadByte();
-                                     }
-                                     break;
-                             }
-
-                             break;
-
-                         default:
-                             break;
-                     }
-                     break;
-             }
-
-             return true;
-         }
-        
 
         /// <summary>
         /// Returns the value of the the varible length quantity in the stream
         /// </summary>
         /// <param name="inputStream">Stream to read the varible length quantity from</param>
+        /// <param name="currentByte">The first byte of the varible length quantity</param>
         /// <returns>The value of the varible length time</returns>
-        private int GetVaribleLength(Stream inputStream) {
+        private int GetVaribleLength(Stream inputStream, byte currentByte) {
             int currentValue = 0;       //The int that will store the caluclated value whislt it's being calculated
-            byte currentByte = 0;       //The byte that stores the current byte being processed
 
-            do {
-                currentByte = (byte)inputStream.ReadByte();                     //Get the next byte from the stream
+
+
+            //While the current byte means means there are more bytes to follow, keep reading the bytes from the stream
+            while(currentByte >= 0x80) {
                 currentValue = (currentValue << 7) | (currentByte & 0x7f);      //Bit shift the time byte left 7, then or the current byte after removing bit 8
-            } while (currentByte>=0x80);
-            
+                currentByte = (byte)inputStream.ReadByte();                     //Get the next byte from the stream
+            }
+
+            currentValue = (currentValue << 7) | (currentByte & 0x7F);
+
             return currentValue;
         }
 
 
 
+
+
         #endregion
 
-
-
+        private void btnTest_Click(object sender, EventArgs e) {
+            //Make sure the user has loaded an exercise
+            if (loadedFile != null) {
+                frmTest testForm = new frmTest(loadedFile);
+                testForm.Show();
+            } else
+                MessageBox.Show("Please load an exercise");
+        }
     }
 }

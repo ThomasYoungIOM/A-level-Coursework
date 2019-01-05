@@ -236,18 +236,13 @@ namespace FFT_Testing {
             int biggestPitchLocation = 0;
             byte[] bufferCopy = buffer;
 
-            //Get rid of the loud values
+            //convert the byte array to the short array
             for (int i = 1; i < bufferCopy.Length - 1; i += 2) {
                 input[i / 2] = (short)(Convert.ToUInt16((bufferCopy[i]) | bufferCopy[i + 1] << 8));
             }
             
 
-            /*Centre the values around 0
-            for (int i = 0; i < input.Length; i++) {
-                //If the value is bigger than 128, then it is the weaird top half of the graph and should have it taken away to put it below the line
-                if (input[i].Real > 128)
-                    input[i] = input[i].Real - 256;
-            }*/
+            
 
 
             //Do the transformation
@@ -256,17 +251,17 @@ namespace FFT_Testing {
                 DFT.FFT(pinIn, pinOut);
             }
 
-            /*//miss half of the values cuz they too loud
+            //miss half of the values cuz they repeated
             for (int i = 0; i < output.Length/2; i++) {
                 if(output[i].Magnitude > biggestPitch) {
                     biggestPitch = output[i].Magnitude;
                     biggestPitchLocation = i;
                 }
-            }*/
+            }
 
             lblBiggestPitch.Text = biggestPitchLocation.ToString();
 
-            fft(bufferCopy);
+            //fft(bufferCopy);
 
 
             double biggestMag = 0;

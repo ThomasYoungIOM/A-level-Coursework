@@ -186,17 +186,19 @@ namespace Midi_Serial_sender
             }
 
             void interpretStatusByte(byte controlByte, byte firstDataByte) {
-
+                byte tempVel;
                 switch ((controlByte & 0xF0) >> 4) {        //Use the and bitwise operator to only select the left most nibble, then bitshift right to get left most nibble only
                     case 0x8:
                         //Note off (2 data bytes)
-                        lsvMidi.Items.Add($"Time: {deltaTime} Note off Ch: {controlByte & 0x0F} Note:{firstDataByte}  Velocity: {Convert.ToByte(midiStream.ReadByte())}");
+                        tempVel = Convert.ToByte(midiStream.ReadByte());
+                        lsvMidi.Items.Add($"Time: {deltaTime} Note off Ch: {controlByte & 0x0F} Note:{firstDataByte}  Velocity: {tempVel}");
                         statusCarry = controlByte;
                         break;
 
                     case 0x9:
                         //Note on   (2data bytes)
-                        lsvMidi.Items.Add($"Time: {deltaTime} Note on Ch: {controlByte & 0x0F} Note:{firstDataByte} Velocity: {Convert.ToByte(midiStream.ReadByte())}");
+                        tempVel = Convert.ToByte(midiStream.ReadByte());
+                        lsvMidi.Items.Add($"Time: {deltaTime} Note on Ch: {controlByte & 0x0F} Note:{firstDataByte} Velocity: {tempVel}");
                         statusCarry = controlByte;
                         break;
 
@@ -270,6 +272,10 @@ namespace Midi_Serial_sender
 
 
         }
-        
+
+        private void btnColourForm_Click(object sender, EventArgs e) {
+            ColourFile nextForm = new ColourFile();
+            nextForm.Show();
+        }
     }                                                                 
 }                                                                     

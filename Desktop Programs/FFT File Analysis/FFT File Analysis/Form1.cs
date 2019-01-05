@@ -18,11 +18,11 @@ namespace FFT_File_Analysis {
     public partial class frmMain : Form {
 
         bool recording = false;
-        WaveFileWriter writer = new WaveFileWriter(@"C:\Users\Thomas\source\repos\A-level-Coursework\Desktop Programs\FFT File Analysis\FFT File Analysis\bin\Debug\Wav Files\recordedWav.wav", new WaveFormat(44100,1));
+        WaveFileWriter writer;
 
         const int inBufferLen = 4096;
         WaveFormat inputFormat = new WaveFormat(44100,16,1);        //Format of the file being read in
-        WaveFormat convertedFormat = new WaveFormat(8196,16,1);   //The format of the wav file that the insput should be converted to before being sent to the FFT
+        //WaveFormat convertedFormat = new WaveFormat(8192,16,1);   //The format of the wav file that the insput should be converted to before being sent to the FFT
 
         byte[] inByteBuffer = new byte[inBufferLen * 2];
         short[] inBuffer = new short[inBufferLen];
@@ -35,8 +35,9 @@ namespace FFT_File_Analysis {
         List<int> largestPitch = new List<int>();
 
 
-            WaveInEvent waveIn = new WaveInEvent();
         private void btnRec_Click(object sender, EventArgs e) {
+            
+
 
             string output1 = "";
             foreach (var item in largestPitch) {
@@ -46,10 +47,12 @@ namespace FFT_File_Analysis {
             int hello = 0;
 
 
-
-            waveIn.DeviceNumber = 0;            //The divice I want to use as the source for the sound (Device 0 is the default device)
+            WaveInEvent waveIn = new WaveInEvent();
             waveIn.WaveFormat = new WaveFormat(44100, 1);       //Format of the source
+            waveIn.DeviceNumber = 0;            //The divice I want to use as the source for the sound (Device 0 is the default device)
+
             if (!recording) {
+                writer = new WaveFileWriter(@"C:\Users\Thomas\source\repos\A-level Coursework\Desktop Programs\FFT File Analysis\FFT File Analysis\bin\Debug\Wav Files\recordedWav.wav", new WaveFormat(44100, 1));
                 recording = true;
                 waveIn.DataAvailable += WaveIn_DataAvailable;       //Add this sub to the events list of "waveIn". The sub will run whenerver there is data availible in "waveIn"
                 waveIn.StartRecording();
@@ -73,7 +76,8 @@ namespace FFT_File_Analysis {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void WaveIn_DataAvailable(object sender, WaveInEventArgs e) {
-               writer.Write(e.Buffer,0,e.Buffer.Length);
+            
+            writer.Write(e.Buffer,0,e.Buffer.Length);
         }
 
         private void btnOpenWav_Click(object sender, EventArgs e) {
@@ -86,64 +90,90 @@ namespace FFT_File_Analysis {
             List<Complex> fftCompOutput = new List<Complex>();
 
             if(ofdWavFile.ShowDialog() == DialogResult.OK) {
-                wavFile = new WaveFileReader(ofdWavFile.FileName);
-                WaveFormatConversionStream waveFile = new WaveFormatConversionStream(convertedFormat, wavFile);
+                largestPitch = new List<int>();
+                using (wavFile = new WaveFileReader(ofdWavFile.FileName)) {
+                    //WaveFormatConversionStream waveFile = new WaveFormatConversionStream(convertedFormat, wavFile);
 
-                //While there is enough data to perform the FFT on
-                while (waveFile.Length - count*inBufferLen*2 > inBufferLen * 2) {
-                    //Create the new list in the list to hold the values from the FFT of this buffer
-                    outputSpec.Add(new List<double>());
+                    //While there is enough data to perform the FFT on
+                    while (wavFile.Length - count * inBufferLen * 2 > inBufferLen * 2) {
+                        //Create the new list in the list to hold the values from the FFT of this buffer
+                        outputSpec.Add(new List<double>());
 
-                    //Read in the bytes from the wav file, reading twice as many since the array that is passed to the transform will be 16 bit values, not 8 bit
-                    wavFile.Read(inByteBuffer, 0, inBufferLen * 2);
-                    //Convert the bytes to shorts
-                    inBuffer = byteToShort(inByteBuffer);
+                        //Read in the bytes from the wav file, reading twice as many since the array that is passed to the transform will be 16 bit values, not 8 bit
+                        wavFile.Read(inByteBuffer, 0, inBufferLen * 2);
+                        //Convert the bytes to shorts
+                        inBuffer = byteToShort(inByteBuffer);
 
 
-                    
-                    drawAudio(inBuffer);
-                    
-                    outputMags.Clear();     //Clear the list for the new values
-                    
-                    fftCompOutput = fft(inBuffer).ToList();
 
-                    //Perform the FFT on the buffer
-                    foreach (var currentComp in fftCompOutput) {
-                        //outputSpec[count].Add(currentComp.Magnitude);
-                        outputMags.Add(currentComp.Magnitude);
-                    }
 
-                    for (int i = 0; i < outputMags.Count; i++) {
-                        if (outputMags[i] > largestMagnitude) {
-                            largestMagnitude = outputMags[i];
-                            largestIndex = i;
+
+                        outputMags.Clear();     //Clear the list for the new values
+
+                        fftCompOutput = fft(inBuffer).ToList();     //Perform the fft
+
+
+                        //Since the output is duplicated in the array, I only need the first half.
+                        for (int i = 0; i < fftCompOutput.Count / 2; i++) {
+                            outputSpec[count].Add(fftCompOutput[i].Magnitude);
+                            outputMags.Add(fftCompOutput[i].Magnitude);
                         }
+
+                        for (int i = 0; i < outputMags.Count; i++) {
+                            if (outputMags[i] > largestMagnitude) {
+                                largestMagnitude = outputMags[i];
+                                largestIndex = i;
+                            }
+                        }
+
+                        largestPitch.Add(largestIndex);
+
+                        largestMagnitude = 0;       //Reset the largest mag counter
+
+                        count++;
                     }
 
-                    largestPitch.Add(largestIndex);
+                    output = "";
 
-                    largestMagnitude = 0;       //Reset the largest mag counter
-                    
-                    count++;
+                    foreach (var item in largestPitch) {
+                        output += item.ToString() + ",";
+                    }
+
+                    txtOutput.Text = output;
+
+                    drawGraph(largestPitch);
+
+
+                    #region uselessSpecStuff
+
+                    /*double[][] outSpecArr = outputSpec.Select(Enumerable.ToArray).ToArray();
+
+
+                    IEnumerable<string> enumerator = outSpecArr.Cast<double>().Select((s, i) => (i + 1) % 4096 == 0 ? string.Concat(s, "|") : string.Concat(s,","));
+
+                    //MY STUPID ATTEMPT TO SEE OUTPUT. DOn@T NEED TO
+
+
+                    var outputTHing = enumerator.Select((s) => s.ToArray());
+
+                    var outputThing2 = outputTHing.Select((s) => s
+                    /*
+
+
+
+
+
+                    /*for (int i = 0; i < 322; i++) {
+                        for (int j = 0; j < 4096; j++) {
+                            specOutput += outSpecArr[i][j] + ",";
+                        }
+                        specOutput += "|";
+                    }*/
+                    #endregion
                 }
+
+
             }
-
-
-
-           
-
-
-            output = "";
-
-            foreach (var item in largestPitch) {
-                output += item.ToString() + ",";
-            }
-
-
-
-
-            int hi = 0;
-
         }
 
         /// <summary>
@@ -162,6 +192,12 @@ namespace FFT_File_Analysis {
             return outputArr;
         }
 
+
+        /// <summary>
+        /// Performs the FFT on the buffer
+        /// </summary>
+        /// <param name="inArray"></param>
+        /// <returns></returns>
         private Complex[] fft(short[] inArray) {
             Complex[] inputDouble = new Complex[inArray.Length];
             Complex[] outComp = new Complex[inArray.Length];
@@ -198,5 +234,28 @@ namespace FFT_File_Analysis {
         }
 
 
+        private void drawGraph(List<int> pitchList) {
+            bool isRed = false;
+            Bitmap drawnGraph = new Bitmap(pitchList.Count, pitchList.Max() + 1);
+            using (Graphics g = Graphics.FromImage(drawnGraph)) {
+
+
+
+
+                for (int i = 0; i < pitchList.Count; i++) {
+                    drawnGraph.SetPixel(i, pitchList[i], isRed ? Color.Red : Color.Black);
+
+                    //Swap the colour every 0.5 sec
+                    if (i % 5 == 0)
+                        isRed = isRed ? false : true;
+                }
+
+                picOutput.Image = drawnGraph;
+            }
+        }
+
+        private void btnDrawValues_Click(object sender, EventArgs e) {
+            drawGraph(txtOutput.Text.Split(',').Select((S) => int.Parse(S)).ToList<int>());
+        }
     }
 }
