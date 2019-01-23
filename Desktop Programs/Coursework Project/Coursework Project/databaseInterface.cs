@@ -14,7 +14,7 @@ namespace Coursework_Project {
     /// <summary>
     /// A class that provides a simple to use interface for all of the database functions that are required for the program
     /// </summary>
-    class databaseInterface {
+    public class databaseInterface {
         private string p_connectionString;      //Stores the connection string for the database connection
         
         /// <summary>

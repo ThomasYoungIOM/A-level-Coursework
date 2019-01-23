@@ -38,7 +38,7 @@ namespace Coursework_Project {
 
             //Get a list of all of the instruments of the availble exercises and adds them to the Combo box view. 
             currentCommand = new SqlCommand("SELECT DISTINCT Instrument FROM Exercises WHERE FileExists = 1 INTERSECT SELECT DISTINCT Instrument FROM Notes");      //This command gets a list of all of the instruments that can be found in the Exercises table AND in the notes table. This ensures that there will be no exercises selected for which there aren't any defininitions for that instrument
-            cmbInstuments.Items.AddRange(databaseInterface.executeQuery(currentCommand).AsEnumerable().Select(row => row[0].ToString()).ToArray());                 //The "AsEnumerable" converts the datatable into an enumerable that can then have all of the elements selected from it and converted to an array
+            cmbInstuments.Items.AddRange(databaseInterface.executeQuery(currentCommand).AsEnumerable().Select(row => row[0].ToString()).ToArray());                 //Cycle through the datatable line by line and add each result to an array that can then be assigned to the combo box
 
             //Query database to select all available songs and display them in the datagrid view
             currentCommand = new SqlCommand("SELECT * FROM Exercises WHERE FileExists = 1 AND Exercises.Instrument IN(SELECT Instrument FROM Notes)");      //This command gets all of the exercises where the file can be found and the instrument used in the exercises also has note definitions for it
@@ -52,6 +52,7 @@ namespace Coursework_Project {
         private void cmbInstuments_SelectedIndexChanged(object sender, EventArgs e) {
             databaseInterface databaseInterface = new databaseInterface(dbConnectionString);                            //The database class that will allow me to interact with the database
             SqlCommand sqlCommandToRun = new SqlCommand();                                      //The Sql Statement that will be used to populate dgvExercises
+
 
             //If the "All" option is selected, then set the statement to one that will select all of the exercises, else, just select the ones with the instrument there
             if (cmbInstuments.SelectedItem.ToString() == "All") {
@@ -97,7 +98,7 @@ namespace Coursework_Project {
             try {
                 using (midiStream = File.Open(midiFilePath, FileMode.Open)) {    //Open file into a stream
 
-                    parseSucessful = ParseMidiFile(midiStream, out loadedFile, out errorString);         //Parse the MIDI file and set it to the loaded file
+                    parseSucessful = ParseMidiFile(midiStream, (string)dgvExercises.SelectedRows[0].Cells["Instrument"].Value,out loadedFile, out errorString);         //Parse the MIDI file and set it to the loaded file
 
                 }
                 //If there was an error, tell the user
@@ -191,7 +192,7 @@ namespace Coursework_Project {
         /// <param name="outputMidiFile">The MIDI File class that will be outputted filled with data</param>
         /// <param name="errorString">In case the file could not be parsed, then this will contain the error</param>
         /// <returns>Returns whether the parse was sucsessful</returns>
-        private bool ParseMidiFile(Stream midiStream, out midiFile outputMidiFile, out string errorString) {
+        private bool ParseMidiFile(Stream midiStream, string instrument, out midiFile outputMidiFile, out string errorString) {
             #region Variables
             byte currentbyte;   //Stores the current byte being processed
             byte statusCarry;   //Stores the last status byte for use by status carry
@@ -281,7 +282,7 @@ namespace Coursework_Project {
             #endregion
 
             //Create the new midiFile and assign it the values that have been read from the stream
-            outputMidiFile = new midiFile(division, null, null, null, listOfNotes);
+            outputMidiFile = new midiFile(division, null, null, null, listOfNotes, instrument);
 
             //Un-grey out the buttons to allow the people to choose other forms
             btnLookAtMusic.Enabled = true;
@@ -477,7 +478,7 @@ namespace Coursework_Project {
         private void btnTest_Click(object sender, EventArgs e) {
             //Make sure the user has loaded an exercise
             if (loadedFile != null) {
-                frmTest testForm = new frmTest(loadedFile);
+                frmTest testForm = new frmTest(loadedFile, new databaseInterface(dbConnectionString)); //@@ sort out passing of database thing
                 testForm.Show();
             } else
                 MessageBox.Show("Please load an exercise");

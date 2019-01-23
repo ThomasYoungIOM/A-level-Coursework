@@ -24,12 +24,14 @@ namespace Coursework_Project {
         const string waveFilePath = @"C:\Users\Thomas\source\repos\A-level Coursework\Desktop Programs\Coursework Project\Coursework Project\bin\Debug\TempWaveFileToMark.wav";
         static WaveInEvent waveIn;          //This is the event that will trigger the sub that will record the current buffer to the temperary file
         static midiFile inputMidi;
+        static databaseInterface databaseInterface;
 
         #region Form Triggered Methods
 
-        public frmTest(midiFile _inputMidi) {
+        public frmTest(midiFile _inputMidi, databaseInterface _databaseInterface) {
             InitializeComponent();
-            inputMidi = new midiFile(_inputMidi.devision, _inputMidi.tempo, _inputMidi.timeSig, _inputMidi.keySig, _inputMidi.listOfNotes);
+            inputMidi = new midiFile(_inputMidi.devision, _inputMidi.tempo, _inputMidi.timeSig, _inputMidi.keySig, _inputMidi.listOfNotes, _inputMidi.Instrument);
+            databaseInterface = _databaseInterface;
         }
 
 
@@ -274,18 +276,26 @@ namespace Coursework_Project {
             int pitchIndex;          //Stores the index of the current note in the pitch list
             int audioIndexLength;    //Stores the number of indexs that the current note takes up in the timing list
             int pitchIndexLength;    //Stores the number of indexs that the current note takes up in the pitch list
-
+            System.Data.SqlClient.SqlCommand getNoteCommand = new System.Data.SqlClient.SqlCommand("SELECT Note,BinNum FROM Notes WHERE Instrument = @0");       //The command that will select the Corosponging bin number from the database
             int audioSamplesCorrect = 0;    //Stores the number of audio samples that were correct (Eg, there was audio playing/not playing at the right time)
             int pitchSamplesCorrect = 0;    //Stores the number of pitches that were correct (Eg, the right note was being played at that time)
+            DataTable noteDataTable = new DataTable();
 
+            Dictionary<byte, int> noteBinPairs = new Dictionary<byte, int>();
+            
 
             timingScore = 0;
             noteScore = 0;
             errorString = "";
 
             //Query database about what bin ids that each note makes
-            //Create dictionary
+            getNoteCommand.Parameters.AddWithValue("@0", inputMidi.Instrument);
 
+            noteDataTable = databaseInterface.executeQuery(getNoteCommand);
+
+
+            //Create dictionary
+            noteBinPairs = noteDataTable.AsEnumerable().ToDictionary(r => r.Field<byte>(0), r => r.Field<int>(1));        //Convert the datatable result to the dictionary by using linq expressions to cycle through all of the keys in column 0, and all the values that will be in column 1
 
             for (int i = 0; i < listOfNotes.Count; i++) {
 
@@ -310,8 +320,16 @@ namespace Coursework_Project {
                 if (listOfNotes[i].noteNum != 0) {                    
                     audioSamplesCorrect += timingList.GetRange(audioIndex, audioIndexLength).Count(x => x == true);     //Count all the times that audio was playing in the specified range
 
+                    //if (!noteBinPairs.ContainsValue(listOfNotes[i].noteNum)) {
+                    //    errorString = "Note does contain definition";
+                    //}
+
+                    //int calculatedBin = 
+
+                   // pitchSamplesCorrect += pitchList[i] - 
+
                 } else {
-                    audioSamplesCorrect += timingList.GetRange(audioIndex, audioIndexLength).Count(x => x == true);     //Count all the times that audio was NOT playing in the specified range
+                    audioSamplesCorrect += timingList.GetRange(audioIndex, audioIndexLength).Count(x => x == false);     //Count all the times that audio was NOT playing in the specified range
                 }
             }
 

@@ -58,6 +58,7 @@ namespace Coursework_Project {
         private bool GenerateStaff(midiFile midiFile,ref int noteIndex, out string errorString) {
             errorString = "";
 
+
             Bitmap currentStaff = Properties.Resources.Staff;   //Stores the generated bitmap
             Graphics currentStaffGraphics = Graphics.FromImage(currentStaff);   //The graphics that will store the image as it is being generated 
 
@@ -67,6 +68,7 @@ namespace Coursework_Project {
             int currentOffsetX = startOffsetX;    //Stores the current X offset
             float currentNoteLength;         //Stores the length of the current note reletive to the length of 1 crochet
             Point currentNoteLocation;
+
 
 
             //Draw time signature
@@ -126,7 +128,9 @@ namespace Coursework_Project {
 
             //end the line
 
-
+            picDisplay.Image = currentStaff;
+            List<Bitmap> tempListOfStaves = midiFile.generateStaves();
+            picDisplay.Image = tempListOfStaves[0];
             return false;
         }
 
