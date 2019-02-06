@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 namespace Coursework_Project {
 
     public partial class frmMainMenu : Form {
@@ -202,7 +203,7 @@ namespace Coursework_Project {
             outputMidiFile = null;        //Stores the parsed midiFile
             errorString = null;             //Stores any error messages that are generated
 
-            List<note> listOfNotes;        //List to store the parsed notes
+            List<Note> listOfNotes;        //List to store the parsed notes
 
             ushort format;      //Stores the Midi file's format. (The program can only deal with format 0 MIDI files)
             ushort numOfTracks; //Store the number of track chuhnks to be found in the file. Should be 1 for Format 0 files
@@ -282,7 +283,7 @@ namespace Coursework_Project {
             #endregion
 
             //Create the new midiFile and assign it the values that have been read from the stream
-            outputMidiFile = new midiFile(division, null, null, null, listOfNotes, instrument);
+            outputMidiFile = new midiFile(division, null, null, null, listOfNotes, instrument, new databaseInterface(dbConnectionString), out bool error, out errorString);
 
             //Un-grey out the buttons to allow the people to choose other forms
             btnLookAtMusic.Enabled = true;
@@ -300,7 +301,7 @@ namespace Coursework_Project {
         /// <param name="listOfNotes">The list of notes that will be output</param>
         /// <param name="errorString">To store any errors that may occur</param>
         /// <returns>Wheather it was sucessfull</returns>
-        private bool ReadTrackData(Stream midiStream, uint currentChunkLength, out List<note> listOfNotes, out string errorString) {
+        private bool ReadTrackData(Stream midiStream, uint currentChunkLength, out List<Note> listOfNotes, out string errorString) {
             byte currentByte;       //Store the byte currently being processed
             byte statusByte;        //Stores the status byte that 
             byte firstDatabyte;     //Stores the first databyte of the current command
@@ -315,7 +316,7 @@ namespace Coursework_Project {
             int count = 0;      //TEMP COUNTER FOR DEBUGGING @@
             int currentStausLength;     //Stores the length of the current status thing be it a f0,f7 or a meta mesage
 
-            listOfNotes = new List<note>();
+            listOfNotes = new List<Note>();
 
             errorString = "";       //Makes sure somthing is assigned to the error string
 
@@ -356,7 +357,7 @@ namespace Coursework_Project {
 
                     case 0x80:  //Note off (2 data bytes)
                                 //create the note with the specified length
-                        listOfNotes.Add(new note(lastAbsoluteTime, currentNote, currentNoteLength));
+                        listOfNotes.Add(new Note(lastAbsoluteTime, currentNote, currentNoteLength));
                         lastAbsoluteTime = currentAbsoluteTime;
                         readingNote = false;
 
@@ -367,14 +368,14 @@ namespace Coursework_Project {
                     case 0x90:  //Note on (2 data bytes)
                         if (midiStream.ReadByte() == 0) {  //If the velocity is zero, then the treat it as a note off event
 
-                            listOfNotes.Add(new note(lastAbsoluteTime, currentNote, currentNoteLength));
+                            listOfNotes.Add(new Note(lastAbsoluteTime, currentNote, currentNoteLength));
                             lastAbsoluteTime = currentAbsoluteTime;
                             readingNote = false;
 
                         } else {    //Else treat it like a note on event
 
                             //Save the gap to the list with a note value of 0 so be the rest
-                            listOfNotes.Add(new note(lastAbsoluteTime, 0, currentGapLength));
+                            listOfNotes.Add(new Note(lastAbsoluteTime, 0, currentGapLength));
 
 
 

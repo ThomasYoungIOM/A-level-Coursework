@@ -30,7 +30,7 @@ namespace Coursework_Project {
 
         public frmTest(midiFile _inputMidi, databaseInterface _databaseInterface) {
             InitializeComponent();
-            inputMidi = new midiFile(_inputMidi.devision, _inputMidi.tempo, _inputMidi.timeSig, _inputMidi.keySig, _inputMidi.listOfNotes, _inputMidi.Instrument);
+            inputMidi = new midiFile(_inputMidi.devision, _inputMidi.tempo, _inputMidi.timeSig, _inputMidi.keySig, _inputMidi.listOfNotes, _inputMidi.Instrument, databaseInterface, out bool error, out string errorString);
             databaseInterface = _databaseInterface;
         }
 
@@ -269,7 +269,7 @@ namespace Coursework_Project {
         /// <param name="noteScore">The proportion of times where the user was playing the right notes at the right time</param>
         /// <param name="errorString">Stores the error message incase an error is hit</param>
         /// <returns>Whether the function was sucessfull or not</returns>
-        private bool AnalysePerformance(List<note> listOfNotes, List<bool> timingList, List<int> pitchList, float secondsPerTick, float audioBufferLengthSec, float pitchBufferLengthSec, out float timingScore, out float noteScore, out string errorString) {
+        private bool AnalysePerformance(List<Note> listOfNotes, List<bool> timingList, List<int> pitchList, float secondsPerTick, float audioBufferLengthSec, float pitchBufferLengthSec, out float timingScore, out float noteScore, out string errorString) {
             float noteStartSec;      //Stores the start time of the note currently being processed in seconds
             float noteLengthSec;     //Stores the length of the note currently being processed in seconds
             int audioIndex;          //Stores the index of the current note in the timing list

@@ -159,14 +159,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="CourseworkDatabaseDataSet.xsc">
       <DependentUpon>CourseworkDatabaseDataSet.xsd</DependentUpon>
     </None>
@@ -183,6 +178,11 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
@@ -208,19 +208,58 @@
     <None Include="Resources\Staff.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\clipart91268.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\clipart1945473.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\clipart2028867.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\WholeNote.svg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\2000px-WholeNote.png" />
+    <None Include="Resources\StaffWithBars.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DottedWholeNote.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DottedQuarterNote.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DottedHalfNote.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EigthNote.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HalfNote.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\QuarterNote.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\WholeNote.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\EigthRest.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DottedQuarterRest.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HalfRest.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HalfRest.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HalfRest1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HalfRest2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HalfRest11.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NotFound.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\FFTW.NET.1.0.1\build\netstandard1.3\FFTW.NET.targets" Condition="Exists('..\packages\FFTW.NET.1.0.1\build\netstandard1.3\FFTW.NET.targets')" />

@@ -17,9 +17,9 @@ namespace Midi_Serial_sender {
 
         private void btnColour_Click(object sender, EventArgs e) {
 
-            string filePath = openFileDialog1.ShowDialog()
+            //string filePath = openFileDialog1.ShowDialog();
 
-            StreamReader midiStream = new StreamReader();
+            //StreamReader midiStream = new StreamReader();
             
             //Paste in head chunk
 

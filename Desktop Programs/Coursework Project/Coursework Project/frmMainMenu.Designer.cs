@@ -74,7 +74,7 @@
             this.dgvExercises.RowHeadersVisible = false;
             this.dgvExercises.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvExercises.Size = new System.Drawing.Size(385, 192);
-            this.dgvExercises.TabIndex = 1;
+            this.dgvExercises.TabIndex = 0;
             // 
             // ExerciseID
             // 
@@ -91,7 +91,7 @@
             this.FileName.HeaderText = "Name";
             this.FileName.Name = "FileName";
             this.FileName.ReadOnly = true;
-            this.FileName.Width = 68;
+            this.FileName.Width = 66;
             // 
             // FilePath
             // 
@@ -99,7 +99,7 @@
             this.FilePath.HeaderText = "File Path";
             this.FilePath.Name = "FilePath";
             this.FilePath.ReadOnly = true;
-            this.FilePath.Width = 82;
+            this.FilePath.Width = 75;
             // 
             // Difficulty
             // 
@@ -107,7 +107,7 @@
             this.Difficulty.HeaderText = "Difficulty (1-10)";
             this.Difficulty.Name = "Difficulty";
             this.Difficulty.ReadOnly = true;
-            this.Difficulty.Width = 119;
+            this.Difficulty.Width = 110;
             // 
             // Instrument
             // 
@@ -115,7 +115,7 @@
             this.Instrument.HeaderText = "Instrument";
             this.Instrument.Name = "Instrument";
             this.Instrument.ReadOnly = true;
-            this.Instrument.Width = 95;
+            this.Instrument.Width = 94;
             // 
             // FileExists
             // 
@@ -145,7 +145,7 @@
             this.cmbInstuments.MaxDropDownItems = 20;
             this.cmbInstuments.Name = "cmbInstuments";
             this.cmbInstuments.Size = new System.Drawing.Size(121, 21);
-            this.cmbInstuments.TabIndex = 0;
+            this.cmbInstuments.TabIndex = 1;
             this.cmbInstuments.SelectedIndexChanged += new System.EventHandler(this.cmbInstuments_SelectedIndexChanged);
             // 
             // label1

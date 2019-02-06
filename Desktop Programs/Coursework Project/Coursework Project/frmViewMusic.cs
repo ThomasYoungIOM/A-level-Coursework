@@ -7,10 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Coursework_Project {
     public partial class frmViewMusic : Form {
-
+        const string dbConnectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename='C:\Users\Thomas\source\repos\A-level Coursework\Desktop Programs\Coursework Project\CourseworkDatabase.mdf';Integrated Security=True;Connect Timeout=30";
 
         static Bitmap[] noteBitmaps;                       //Stores the image of the note with the duration
         static Dictionary<byte, Bitmap> fingeringBitmaps;  //Stores the fingering charts for that instrument
@@ -25,11 +26,31 @@ namespace Coursework_Project {
 
             InitializeComponent();
 
+
             //Load bitmaps
             noteBitmaps = null;
-            if (!GenerateBitmap(inputFile, out generatedScore, out errorString))
-                MessageBox.Show(errorString);
-                
+
+
+            databaseInterface databaseInterfaceToUse;
+            inputFile.GenerateStaves(databaseInterfaceToUse = new databaseInterface(dbConnectionString), out errorString);                            //The database class that will allow me to interact with the database); @@
+
+            List<Bitmap> tempListOfStaves = inputFile.p_listOfStaves;
+
+            Bitmap pageBitmap = new Bitmap(picDisplay.Width, picDisplay.Height);
+            Graphics pageGraphic = Graphics.FromImage(pageBitmap);
+
+            int staveOffset = picDisplay.Height/tempListOfStaves.Count;
+            for (int i = 0; i < tempListOfStaves.Count; i++) {
+                pageGraphic.DrawImage(tempListOfStaves[i], new Rectangle(0, staveOffset * i, picDisplay.Width, picDisplay.Width * picDisplay.Height / tempListOfStaves[i].Width));
+            }
+
+            picDisplay.Image = pageBitmap;
+
+
+            //if (!OLDGenerateBitmap(inputFile, out generatedScore, out errorString))
+            //    MessageBox.Show(errorString);
+
+            //generateStaffs();
         }
 
         #endregion
@@ -37,14 +58,15 @@ namespace Coursework_Project {
         #region Called Subs
 
 
+        #region oldDrawing
 
-        private bool GenerateBitmap(midiFile midiFile, out Bitmap generatedScore, out string errorString) {
+        private bool OLDGenerateBitmap(midiFile midiFile, out Bitmap generatedScore, out string errorString) {
             generatedScore = null;
 
             int noteIndex = 0;
 
             //Draw each line and save to array
-            GenerateStaff(midiFile,ref noteIndex, out errorString);
+            OLDGenerateStaff(midiFile,ref noteIndex, out errorString);
             
             //Loop through array and draw each bitmap onto the main image
             
@@ -55,7 +77,7 @@ namespace Coursework_Project {
         
 
 
-        private bool GenerateStaff(midiFile midiFile,ref int noteIndex, out string errorString) {
+        private bool OLDGenerateStaff(midiFile midiFile,ref int noteIndex, out string errorString) {
             errorString = "";
 
 
@@ -128,11 +150,44 @@ namespace Coursework_Project {
 
             //end the line
 
-            picDisplay.Image = currentStaff;
-            List<Bitmap> tempListOfStaves = midiFile.generateStaves();
-            picDisplay.Image = tempListOfStaves[0];
+            
+
+
+
+
             return false;
         }
+
+        #endregion
+
+        private bool generateStaffs() {
+            
+            
+            
+            
+            
+            
+            #region tempDrawingBars
+            /*
+            //draw lines for the bars on the thing then file write it out
+            Bitmap staffToDrawOn = Properties.Resources.Staff;
+            Graphics staffDrawer = Graphics.FromImage(staffToDrawOn);
+
+            staffDrawer.DrawLine(new Pen(Color.Black, 8), 1863, 160, 1863, 536);
+            staffDrawer.DrawLine(new Pen(Color.Black, 8), 1863+1348, 160, 1863 + 1348, 536);
+            staffDrawer.DrawLine(new Pen(Color.Black, 8), 1863 + 1348 * 2, 160, 1863 + 1348 * 2, 536);
+
+            picDisplay.Image = staffToDrawOn;
+
+            staffToDrawOn.Save(@"C:\Users\Thomas\source\repos\A-level Coursework\Desktop Programs\Coursework Project\Coursework Project\Resources\StaffWithBars.png");
+            */
+            #endregion
+            return true;
+        }
+
+
+
+
 
         private void CloseForm() {
             
