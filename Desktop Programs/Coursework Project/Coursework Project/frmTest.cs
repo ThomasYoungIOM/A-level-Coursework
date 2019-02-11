@@ -30,7 +30,7 @@ namespace Coursework_Project {
 
         public frmTest(midiFile _inputMidi, databaseInterface _databaseInterface) {
             InitializeComponent();
-            inputMidi = new midiFile(_inputMidi.devision, _inputMidi.tempo, _inputMidi.timeSig, _inputMidi.keySig, _inputMidi.listOfNotes, _inputMidi.Instrument, databaseInterface, out bool error, out string errorString);
+            inputMidi = new midiFile(_inputMidi.devision, _inputMidi.tempo, _inputMidi.timeSig, _inputMidi.keySig, _inputMidi.listOfNotes, _inputMidi.Instrument, _databaseInterface, out bool error, out string errorString);
             databaseInterface = _databaseInterface;
         }
 
@@ -120,7 +120,7 @@ namespace Coursework_Project {
                 }
 
                 audioDetected.AddRange(currentAudioDetected);   //Adds the values from the just read buffer to the previously collected values
-
+                ..
 
                 //Perform the FFT on the buffer and copy only the first half to the array
                 Array.Copy(FFT(currentBuffer),fftCompOutput, fftCompOutput.Length);
@@ -143,7 +143,7 @@ namespace Coursework_Project {
             //Analyse how well they matched the midi file
             AnalysePerformance(inputMidi.listOfNotes, audioDetected, maxValues, ((float)inputMidi.tempo  / 1000000f) / (float)inputMidi.devision, (float)audioSectionSize / (float)waveFileFormat.SampleRate, (float)inBufferLen / (float)waveFileFormat.SampleRate, out float timingScore, out float noteScore, out errorString);
 
-
+            waveReader.Dispose();
 
         }
 
@@ -339,6 +339,28 @@ namespace Coursework_Project {
 
             return true;
         }
+
+
+
+
+
+        /* *NOTE* *USE LOGS FOR THE Y-AXIS PLOT TO MAKE EACH INTERVAL EVEN*
+         * --Initilization--
+         * Calculate how many seconds are displayed in one line of music (Devision * Beats per bar * num of bars)
+         * Calculate the number of pixels per second (width of one staff / seconds in one staff)
+         * Calculate the width of the bitmap that will be required (Pixels Per Second * number of seconds)
+         * 
+         * --Drawing the Notes that should've been played on--
+         * Calculate the width of the box to draw (Note length * devision * Pixels per second)
+         * Calucalte hieght to draw the box at (The line is split up into the range of highest bin number to lowest bin number using a scale factor = (height / Number of bins) and the lowest bin number box drawn at 
+         * 
+         * 
+         * --Drawing the notes that were actually played on--
+         * 
+         */
+
+
+
         #endregion
 
         #region Temp Testing

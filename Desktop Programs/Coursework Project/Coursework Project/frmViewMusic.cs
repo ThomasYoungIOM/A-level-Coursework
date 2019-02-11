@@ -46,11 +46,6 @@ namespace Coursework_Project {
 
             picDisplay.Image = pageBitmap;
 
-
-            //if (!OLDGenerateBitmap(inputFile, out generatedScore, out errorString))
-            //    MessageBox.Show(errorString);
-
-            //generateStaffs();
         }
 
         #endregion
