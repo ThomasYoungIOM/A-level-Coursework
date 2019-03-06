@@ -30,7 +30,7 @@ namespace Coursework_Project {
 
         public frmTest(midiFile _inputMidi, databaseInterface _databaseInterface) {
             InitializeComponent();
-            inputMidi = new midiFile(_inputMidi.devision, _inputMidi.tempo, _inputMidi.timeSig, _inputMidi.keySig, _inputMidi.listOfNotes, _inputMidi.Instrument, _databaseInterface, out bool error, out string errorString);
+            inputMidi = _inputMidi; //new midiFile(_inputMidi.devision, _inputMidi.tempo, _inputMidi.timeSig, _inputMidi.keySig, _inputMidi.listOfNotes, _inputMidi.Instrument, _databaseInterface, out bool error, out string errorString);
             databaseInterface = _databaseInterface;
         }
 
@@ -66,6 +66,24 @@ namespace Coursework_Project {
 
             btnStop.Enabled = false;
             btnStart.Enabled = true;
+
+
+
+            //@@@@
+            //Bitmap tempBitMap = new Bitmap(inputMidi.p_rightNoteBitmap);
+            //tempBitMap.Save("SaveTestThingy.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+
+
+            //picDisplay.Image = inputMidi.p_rightNoteBitmap.Clone(new Rectangle(0,0,picDisplay.Width, picDisplay.Height), inputMidi.p_rightNoteBitmap.PixelFormat); ;
+            //picDisplay.Image = inputMidi.p_rightNoteBitmap;//inputMidi.p_listOfRightNotes[0];
+            Bitmap displayBitmap = new Bitmap(inputMidi.p_listOfRightNotes[0].Width, inputMidi.p_listOfRightNotes[0].Height * inputMidi.p_listOfRightNotes.Count);
+            using (Graphics drawingExamples = Graphics.FromImage(displayBitmap)) {
+                for (int i = 0; i < inputMidi.p_listOfRightNotes.Count; i++) {
+                    drawingExamples.DrawImage(inputMidi.p_listOfRightNotes[i], 0, i * inputMidi.p_listOfRightNotes[0].Height);
+                }
+
+                picDisplay.Image = displayBitmap;
+            }
         }
 
 
@@ -120,7 +138,7 @@ namespace Coursework_Project {
                 }
 
                 audioDetected.AddRange(currentAudioDetected);   //Adds the values from the just read buffer to the previously collected values
-                ..
+                
 
                 //Perform the FFT on the buffer and copy only the first half to the array
                 Array.Copy(FFT(currentBuffer),fftCompOutput, fftCompOutput.Length);
@@ -344,20 +362,6 @@ namespace Coursework_Project {
 
 
 
-        /* *NOTE* *USE LOGS FOR THE Y-AXIS PLOT TO MAKE EACH INTERVAL EVEN*
-         * --Initilization--
-         * Calculate how many seconds are displayed in one line of music (Devision * Beats per bar * num of bars)
-         * Calculate the number of pixels per second (width of one staff / seconds in one staff)
-         * Calculate the width of the bitmap that will be required (Pixels Per Second * number of seconds)
-         * 
-         * --Drawing the Notes that should've been played on--
-         * Calculate the width of the box to draw (Note length * devision * Pixels per second)
-         * Calucalte hieght to draw the box at (The line is split up into the range of highest bin number to lowest bin number using a scale factor = (height / Number of bins) and the lowest bin number box drawn at 
-         * 
-         * 
-         * --Drawing the notes that were actually played on--
-         * 
-         */
 
 
 
@@ -378,7 +382,7 @@ namespace Coursework_Project {
 
                     //Swap the colour every 0.5 sec
                     if (i % 5 == 0)
-                        isRed = isRed ? false : true;
+                        isRed = !isRed;
                 }
 
                 picDisplay.SizeMode = PictureBoxSizeMode.StretchImage;

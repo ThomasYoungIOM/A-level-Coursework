@@ -118,6 +118,30 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="A5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\A5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="A6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\A6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="B5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\B5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="B6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\B6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CS5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CS5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CS6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CS6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="D5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\D5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="D6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\D6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="DottedHalfNote" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DottedHalfNote.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -133,11 +157,29 @@
   <data name="DottedWholeRest" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\HalfRest11.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="E5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\E5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="E6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\E6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="EighthNote" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\EigthNote.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="EigthRest" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\EigthRest.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FS5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FS5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="FS6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FS6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="G5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\G5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="G6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\G6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="HalfNote" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\HalfNote.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Numerics;
 using System.IO;
 
-using NAudio.Wave;
+using NAudio.Wave;      //Naudio libary
 
-using FFTW.NET;
+using FFTW.NET;         //FFT libary
 
 namespace FFT_Testing {
     public partial class Form1 : Form {
@@ -218,6 +212,7 @@ namespace FFT_Testing {
             for (int i = 0; i < input.Length; i++) {
                 using (Graphics g = picGraph.CreateGraphics()) {
                     g.DrawEllipse(Pens.Black, i, Convert.ToSingle(output[i].Magnitude), 4, 4);
+                    txtFreqList.Text = txtFreqList.Text + output[i].Magnitude.ToString();
                 }
             }
 

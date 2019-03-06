@@ -35,13 +35,15 @@ namespace Coursework_Project {
             inputFile.GenerateStaves(databaseInterfaceToUse = new databaseInterface(dbConnectionString), out errorString);                            //The database class that will allow me to interact with the database); @@
 
             List<Bitmap> tempListOfStaves = inputFile.p_listOfStaves;
+            List<Bitmap> tempListOfFingering = inputFile.p_listOfFingeringBitmaps;
 
             Bitmap pageBitmap = new Bitmap(picDisplay.Width, picDisplay.Height);
             Graphics pageGraphic = Graphics.FromImage(pageBitmap);
 
-            int staveOffset = picDisplay.Height/tempListOfStaves.Count;
+            int staveOffset = picDisplay.Height/tempListOfStaves.Count/2;
             for (int i = 0; i < tempListOfStaves.Count; i++) {
-                pageGraphic.DrawImage(tempListOfStaves[i], new Rectangle(0, staveOffset * i, picDisplay.Width, picDisplay.Width * picDisplay.Height / tempListOfStaves[i].Width));
+                pageGraphic.DrawImage(tempListOfStaves[i], new Rectangle(0, 2 * staveOffset * i, picDisplay.Width, picDisplay.Width * picDisplay.Height / tempListOfStaves[i].Width));
+                pageGraphic.DrawImage(tempListOfFingering[i],new Rectangle(0, staveOffset * (i * 2 + 1), picDisplay.Width, picDisplay.Width * picDisplay.Height / tempListOfStaves[i].Width));
             }
 
             picDisplay.Image = pageBitmap;

@@ -6,6 +6,8 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace Coursework_Project {
 
@@ -33,6 +35,62 @@ namespace Coursework_Project {
             databaseInterface databaseInterface = new databaseInterface(dbConnectionString);        //The database class that will allow me to interact with the database easily
             SqlCommand currentCommand;
             #endregion
+
+            #region @@ TEMP LOADING OF IMAGIES INTO DATABSE TESTING
+
+            
+            
+            
+#if false
+            /*fileOpener = File.Open(@"C:\Users\Thomas\source\repos\A-level Coursework\Desktop Programs\Coursework Project\Coursework Project\Resources\E5.png", FileMode.Open);
+            fileOpener.CopyTo(imageStream);
+            */
+
+            MemoryStream imageStream = new MemoryStream();
+            string[] fileNames = { "D5", "E5", "FS5", "G5", "A5", "B5", "CS5", "D6", "E6", "FS6", "G6", "A6", "B6", "CS6" };
+            byte[] noteNumbers = { 74, 76, 78, 79, 81, 83, 85, 86, 88, 90, 91, 93, 95, 97 };
+            FileStream fileOpener;
+
+
+            for (int i = 0; i < noteNumbers.Length; i++) {
+                fileOpener = File.Open($@"C:\Users\Thomas\source\repos\A-level Coursework\Desktop Programs\Coursework Project\Coursework Project\Resources\{fileNames[i]}.png", FileMode.Open);
+                fileOpener.CopyTo(imageStream);
+
+
+                //currentCommand = new SqlCommand("INSERT INTO Notes(FingeringDrawing) VALUES @inputImage ");
+                currentCommand = new SqlCommand("UPDATE Notes SET FingeringDrawing = @inputImage WHERE Note = @noteNumber");
+                currentCommand.Parameters.AddWithValue("@inputImage", imageStream.ToArray());
+                currentCommand.Parameters.AddWithValue("@noteNumber", noteNumbers[i]);
+
+                databaseInterface.executeNonQuery(currentCommand);
+            }
+
+
+
+
+#endif
+
+#if false   
+            MemoryStream memStream = new MemoryStream();
+            DataTable outputDataTable = new DataTable();
+            currentCommand = new SqlCommand("SELECT FingeringDrawing FROM Notes");
+
+            outputDataTable = databaseInterface.executeQuery(currentCommand);
+
+            for (int i = 0; i < 14; i++) {
+
+                memStream.Write(outputDataTable.Rows[i].Field<byte[]>("FingeringDrawing"),0, outputDataTable.Rows[i].Field<byte[]>("FingeringDrawing").Length);
+
+                picTesting.Image = new Bitmap(memStream);
+            }
+
+
+
+#endif
+
+#endregion
+
+
 
             //Check all the files in the database to see if they are there
             CheckDatabaseFiles(databaseInterface);
@@ -123,9 +181,9 @@ namespace Coursework_Project {
             Application.Exit();
         }
 
-        #endregion
+#endregion
 
-        #region Called Subs
+#region Called Subs
 
         /// <summary>
         /// Checks the database to see if the files can be found. If a file cannot be found, it's "FileExists" row will be set to 0, else it will be set to 1 to show it does exist.
@@ -194,7 +252,7 @@ namespace Coursework_Project {
         /// <param name="errorString">In case the file could not be parsed, then this will contain the error</param>
         /// <returns>Returns whether the parse was sucsessful</returns>
         private bool ParseMidiFile(Stream midiStream, string instrument, out midiFile outputMidiFile, out string errorString) {
-            #region Variables
+#region Variables
             byte currentbyte;   //Stores the current byte being processed
             byte statusCarry;   //Stores the last status byte for use by status carry
             bool end = false;   //Has the end of the file been reached?
@@ -208,11 +266,11 @@ namespace Coursework_Project {
             ushort format;      //Stores the Midi file's format. (The program can only deal with format 0 MIDI files)
             ushort numOfTracks; //Store the number of track chuhnks to be found in the file. Should be 1 for Format 0 files
             ushort division;    //Store the pace of the MIDI file
-            #endregion
+#endregion
 
-            #region Parse Head Chunk
+#region Parse Head Chunk
 
-            #region Get data from stream
+#region Get data from stream
 
             //Chunk Type (4 bytes) - Will be either "MThd" for the head chunk or "MTrk" for track chunk in ASCII.
             chunkType = (uint)((midiStream.ReadByte()<<24) | (midiStream.ReadByte() << 16) | (midiStream.ReadByte() << 8) | (midiStream.ReadByte()));       //Gets the chunk type
@@ -220,7 +278,7 @@ namespace Coursework_Project {
             //Length (4 bytes) - In Head chunk, should always be 6
             currentChunkLength = (uint)((midiStream.ReadByte() << 24) | (midiStream.ReadByte() << 16) | (midiStream.ReadByte() << 8) | (midiStream.ReadByte()));    //Convert the 4 bytes into 1 integer. First byte times by 16^6 plus the second byte times 16^4 and so on
 
-            //Format (2 byte) - Should be either 0, 1 or 2. The program can only deal with format 0 MIDI Files
+            //Format (2 byte) - Should be either 0, 1 or 2. This program can only deal with format 0 MIDI Files
             format = (ushort)((midiStream.ReadByte() << 8) | (midiStream.ReadByte()));
 
             //Number of Tracks (2 bytes) - Should be 1 for format 0 MIDI files
@@ -233,10 +291,10 @@ namespace Coursework_Project {
              *          |  0 |     Ticks per crochet    |
              *          |  1 |-frames/second|ticks/frame|
              */
-            #endregion
+#endregion
 
 
-            #region Validate data
+#region Validate data
 
             //Make sure all aspects of the head chunks are valid, if they are not, then output an error and return that the parse failed
             if (chunkType != 0x4d546864) {
@@ -245,7 +303,7 @@ namespace Coursework_Project {
             } else if (currentChunkLength != 6) {
                 errorString = "Head Chunk invalid length";
                 return false;
-            } else if (format != 0 & format != 1){
+            } else if (format != 0){
                 errorString = "Format not valid";
                 return false;
             } else if (numOfTracks != 1) {
@@ -256,17 +314,17 @@ namespace Coursework_Project {
                 return false;
             }
 
-            #endregion
+#endregion
 
 
-            #endregion
+#endregion
 
-            #region Parse Track Chunk
+#region Parse Track Chunk
 
             //Chunk Type (4 bytes) - Will be either "MThd" for the head chunk or "MTrk" for track chunk in ASCII.
             chunkType = (uint)((midiStream.ReadByte() << 24) | (midiStream.ReadByte() << 16) | (midiStream.ReadByte() << 8) | (midiStream.ReadByte()));       //Gets the chunk type
 
-            //Length (4 bytes) - In Head chunk, should always be 6
+            //Length (4 bytes)
             currentChunkLength = (uint)((midiStream.ReadByte() << 24) | (midiStream.ReadByte() << 16) | (midiStream.ReadByte() << 8) | (midiStream.ReadByte()));    //Convert the 4 bytes into 1 integer. First byte times by 16^6 plus the second byte times 16^4 and so on
 
 
@@ -280,7 +338,7 @@ namespace Coursework_Project {
             if(!ReadTrackData(midiStream, currentChunkLength, out listOfNotes, out errorString))
                 return false;
 
-            #endregion
+#endregion
 
             //Create the new midiFile and assign it the values that have been read from the stream
             outputMidiFile = new midiFile(division, null, null, null, listOfNotes, instrument, new databaseInterface(dbConnectionString), out bool error, out errorString);
@@ -313,7 +371,7 @@ namespace Coursework_Project {
             int currentGapLength = 0;   //Stotres the time since the last note off event
             byte currentNote = 0;   //Stores the current note that is being played
             int lastAbsoluteTime = 0;
-            int count = 0;      //TEMP COUNTER FOR DEBUGGING @@
+            //int count = 0;      //TEMP COUNTER FOR DEBUGGING @@
             int currentStausLength;     //Stores the length of the current status thing be it a f0,f7 or a meta mesage
 
             listOfNotes = new List<Note>();
@@ -323,12 +381,12 @@ namespace Coursework_Project {
 
             //Loop util the end of the track
             do {
-                count++;    // @@ TEMP COUNTER FOR DEBUGGINS
+                //count++;    // @@ TEMP COUNTER FOR DEBUGGINS
 
 
                 //If there is a note being read currently, then add the read deltatime to the current delta time and the length of the note, else, just add it to the current delta time to store when the next note should start
                 if (readingNote)
-                    currentAbsoluteTime += currentNoteLength += GetVaribleLength(midiStream, (byte)midiStream.ReadByte());      //@@ Check Works
+                    currentAbsoluteTime += currentNoteLength += GetVaribleLength(midiStream, (byte)midiStream.ReadByte());      
                 else
                     currentAbsoluteTime += currentGapLength += GetVaribleLength(midiStream, (byte)midiStream.ReadByte());
                     
@@ -474,7 +532,7 @@ namespace Coursework_Project {
 
 
 
-        #endregion
+#endregion
 
         private void btnTest_Click(object sender, EventArgs e) {
             //Make sure the user has loaded an exercise
