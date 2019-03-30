@@ -236,9 +236,10 @@ namespace Coursework_Project {
                     currentDrawingNote = 0;
                     bitmapToDraw = Properties.Resources.NotFound;
 
+                    //Loop untill there are the right number of beats in the bar
                     do {
                         //Only count the note if it is long enough to be counted
-                        if (p_listOfNotes[currentNoteIndex].length / p_devision > 0.25f) {
+                        if ((float)p_listOfNotes[currentNoteIndex].length / (float)p_devision >= 0.20f) {
                             currentBarTickCount += p_listOfNotes[currentNoteIndex].length;
                             notesToDrawInBar++;
                         }
@@ -254,7 +255,7 @@ namespace Coursework_Project {
 
 
                         //Only draw the note if it is not too short
-                        if ((float)p_listOfNotes[i].length / (float)p_devision >= 0.25) {
+                        if ((float)p_listOfNotes[i].length / (float)p_devision >= 0.20) {
 
 
                             //Find out if the note is a rest of not
@@ -264,7 +265,7 @@ namespace Coursework_Project {
                                 switch ((float)p_listOfNotes[i].length / p_devision) {
 
                                     //Draw a Quaver
-                                    case float len when (len > 0.25 && len <= 0.75):
+                                    case float len when (len > 0.20 && len <= 0.75):
                                         bitmapToDraw = Properties.Resources.EighthNote;
                                         break;
 
@@ -526,7 +527,7 @@ namespace Coursework_Project {
                     }
 
                     //Only draw the played notes it's required and if there are valid bitmaps to draw
-                    if (drawPlayedNotes && p_listOfRightNotes.Count > currentStave && p_listOfPlayedBitmaps.Count > currentStave) {
+                    if (p_listOfPlayedBitmaps != null && drawPlayedNotes && p_listOfRightNotes.Count > currentStave && p_listOfPlayedBitmaps.Count > currentStave) {
                         fullsizePageGraphics.DrawImage(p_listOfRightNotes[currentStave], 0, currentYPos);
                         fullsizePageGraphics.DrawImage(p_listOfPlayedBitmaps[currentStave], 0, currentYPos);
                         currentYPos += p_listOfRightNotes[currentStave].Height;
