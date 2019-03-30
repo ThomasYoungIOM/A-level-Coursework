@@ -23,15 +23,23 @@ namespace Coursework_Project {
         const int inBufferLen = 4096;       //The length of the audio buffer that will be have the FFT Performed on it
         const string waveFilePath = @"C:\Users\Thomas\source\repos\A-level Coursework\Desktop Programs\Coursework Project\Coursework Project\bin\Debug\TempWaveFileToMark.wav";
         static WaveInEvent waveIn;          //This is the event that will trigger the sub that will record the current buffer to the temperary file
-        static midiFile inputMidi;
-        static databaseInterface databaseInterface;
+        static midiFile currentMidiFile;          //This is the object that will store information about the currently loaded MIDI file
+        static databaseInterface databaseInterface;     //This is the object that will handle any database communication that may be required in this form
+
+        static int currentFirstStaff;
+        static int previousFirstStaff;
+        static int nextFirstStaff;
+
+        static bool displayNotesPlayed = false;      //Stores whether the notes that the user played should be displayed or not
 
         #region Form Triggered Methods
 
         public frmTest(midiFile _inputMidi, databaseInterface _databaseInterface) {
             InitializeComponent();
-            inputMidi = _inputMidi; //new midiFile(_inputMidi.devision, _inputMidi.tempo, _inputMidi.timeSig, _inputMidi.keySig, _inputMidi.listOfNotes, _inputMidi.Instrument, _databaseInterface, out bool error, out string errorString);
+            currentMidiFile = _inputMidi; //new midiFile(_inputMidi.devision, _inputMidi.tempo, _inputMidi.timeSig, _inputMidi.keySig, _inputMidi.listOfNotes, _inputMidi.Instrument, _databaseInterface, out bool error, out string errorString);
             databaseInterface = _databaseInterface;
+            currentMidiFile.GenerateMusicPage(picDisplay.Width, picDisplay.Height, 0, ckbFingering.Checked, false, out Bitmap pageToDisplay, out nextFirstStaff, out string errorString);
+            picDisplay.Image = pageToDisplay;
         }
 
 
@@ -76,6 +84,7 @@ namespace Coursework_Project {
 
             //picDisplay.Image = inputMidi.p_rightNoteBitmap.Clone(new Rectangle(0,0,picDisplay.Width, picDisplay.Height), inputMidi.p_rightNoteBitmap.PixelFormat); ;
             //picDisplay.Image = inputMidi.p_rightNoteBitmap;//inputMidi.p_listOfRightNotes[0];
+            /*
             Bitmap displayBitmap = new Bitmap(inputMidi.p_listOfRightNotes[0].Width, inputMidi.p_listOfRightNotes[0].Height * inputMidi.p_listOfRightNotes.Count);
             using (Graphics drawingExamples = Graphics.FromImage(displayBitmap)) {
                 for (int i = 0; i < inputMidi.p_listOfRightNotes.Count; i++) {
@@ -83,7 +92,7 @@ namespace Coursework_Project {
                 }
 
                 picDisplay.Image = displayBitmap;
-            }
+            }*/
         }
 
 
@@ -91,11 +100,16 @@ namespace Coursework_Project {
         /// Load in the audio file and then mark it
         /// </summary>
         private void btnMark_Click(object sender, EventArgs e) {
+
+
+            btnStop_Click(btnStop, e);      //If the song was being recorded, stop it from being recorded
+
+
             byte[] currentByteBuffer;   //Unforunatly, the method that reads the data from the wav file does not allow me to pass the byte array straight to another function to convert it to a short array, so I need to use this temp array
             short[] currentBuffer;
             int currentBufferNum;
             const int audioSectionSize = 32;   //Stores the size of the buffer that is used to work out if any audio is being played
-            const int audioThresh = 655;        //Stores the thresh used to deterimin if any audio can be heard
+            const int audioThresh = 0;        //Stores the thresh used to deterimin if any audio can be heard
             WaveFileReader waveReader;
             string errorString;
             Complex[] fftCompOutput = new Complex[inBufferLen / 2];      //The FFT gives out half the values that are fed into it so the array can be half the length
@@ -132,36 +146,58 @@ namespace Coursework_Project {
 
 
                 //Fill a list with weather or note audio was being played at that specific time
-                if (!DetectAudio(currentBuffer, audioThresh, audioSectionSize, out currentAudioDetected, out errorString)) { 
+                if (!DetectAudio(currentBuffer, audioThresh, audioSectionSize, out currentAudioDetected, out errorString)) {
                     MessageBox.Show(errorString);
                     return;
                 }
 
                 audioDetected.AddRange(currentAudioDetected);   //Adds the values from the just read buffer to the previously collected values
-                
+
 
                 //Perform the FFT on the buffer and copy only the first half to the array
-                Array.Copy(FFT(currentBuffer),fftCompOutput, fftCompOutput.Length);
+                Array.Copy(FFT(currentBuffer), fftCompOutput, fftCompOutput.Length);
 
 
                 //Find the index of the maximum value of that buffer and add it to the list
                 maxValues.Add(Array.IndexOf(fftCompOutput.Select(x => x.Magnitude).ToArray(), fftCompOutput.Select(x => x.Magnitude).Max()));
 
-                
+
 
             }
 
-            //TEMP THINGS @@
-            //drawGraph(Array.ConvertAll(audioDetected.ToArray(), x => Convert.ToInt32(x)).ToList());
-            drawGraph(maxValues);
+
+            //Load the images into the midiFile class so they can be drawn on when you need to draw the images
+            if (!currentMidiFile.GeneratePlayedBitmaps(audioDetected, maxValues, out errorString)) { 
+                MessageBox.Show($"Something went wrong: {errorString}");
+                return;
+            }
+
+            displayNotesPlayed = true;
+
+
+            Bitmap tempBitmap;
+
+            if(!currentMidiFile.GenerateMusicPage(picDisplay.Width, picDisplay.Height, 0, ckbFingering.Checked, displayNotesPlayed,out tempBitmap, out int lastLine, out errorString)) { 
+                MessageBox.Show($"Something went wrong: {errorString}");
+                return;
+            }
+
+            picDisplay.SizeMode = PictureBoxSizeMode.StretchImage;
+            picDisplay.Image = tempBitmap;
+
+
+        //TEMP THINGS @@
+        //drawGraph(Array.ConvertAll(audioDetected.ToArray(), x => Convert.ToInt32(x)).ToList());
+        //drawGraph(maxValues);
 
 
 
 
-            //Analyse how well they matched the midi file
-            AnalysePerformance(inputMidi.listOfNotes, audioDetected, maxValues, ((float)inputMidi.tempo  / 1000000f) / (float)inputMidi.devision, (float)audioSectionSize / (float)waveFileFormat.SampleRate, (float)inBufferLen / (float)waveFileFormat.SampleRate, out float timingScore, out float noteScore, out errorString);
 
-            waveReader.Dispose();
+        //Analyse how well they matched the midi file
+        //AnalysePerformance(inputMidi.listOfNotes, audioDetected, maxValues, ((float)inputMidi.tempo  / 1000000f) / (float)inputMidi.devision, (float)audioSectionSize / (float)waveFileFormat.SampleRate, (float)inBufferLen / (float)waveFileFormat.SampleRate, out float timingScore, out float noteScore, out errorString);
+
+        waveReader.Dispose();
 
         }
 
@@ -307,7 +343,7 @@ namespace Coursework_Project {
             errorString = "";
 
             //Query database about what bin ids that each note makes
-            getNoteCommand.Parameters.AddWithValue("@0", inputMidi.Instrument);
+            getNoteCommand.Parameters.AddWithValue("@0", currentMidiFile.Instrument);
 
             noteDataTable = databaseInterface.executeQuery(getNoteCommand);
 
@@ -338,13 +374,7 @@ namespace Coursework_Project {
                 if (listOfNotes[i].noteNum != 0) {                    
                     audioSamplesCorrect += timingList.GetRange(audioIndex, audioIndexLength).Count(x => x == true);     //Count all the times that audio was playing in the specified range
 
-                    //if (!noteBinPairs.ContainsValue(listOfNotes[i].noteNum)) {
-                    //    errorString = "Note does contain definition";
-                    //}
-
-                    //int calculatedBin = 
-
-                   // pitchSamplesCorrect += pitchList[i] - 
+                    
 
                 } else {
                     audioSamplesCorrect += timingList.GetRange(audioIndex, audioIndexLength).Count(x => x == false);     //Count all the times that audio was NOT playing in the specified range
@@ -394,8 +424,17 @@ namespace Coursework_Project {
 
 
 
+
         #endregion
 
+        //If the user checks or unchecks the fingering chart button, then re-draw the screeen
+        private void ckbFingering_CheckedChanged(object sender, EventArgs e) {
+            currentMidiFile.GenerateMusicPage(picDisplay.Width, picDisplay.Height, currentFirstStaff, ckbFingering.Checked, displayNotesPlayed, out Bitmap picToDisplay, out nextFirstStaff, out string errorString);
+            picDisplay.Image = picToDisplay;
+        }
 
+        private void frmTest_Load(object sender, EventArgs e) {
+
+        }
     }
 }

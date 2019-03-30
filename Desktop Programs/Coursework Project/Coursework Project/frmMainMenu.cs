@@ -40,7 +40,7 @@ namespace Coursework_Project {
 
             
             
-            
+//This bit of code just allows me to throw the image data for the fingering into the database nice and easy
 #if false
             /*fileOpener = File.Open(@"C:\Users\Thomas\source\repos\A-level Coursework\Desktop Programs\Coursework Project\Coursework Project\Resources\E5.png", FileMode.Open);
             fileOpener.CopyTo(imageStream);
@@ -53,6 +53,7 @@ namespace Coursework_Project {
 
 
             for (int i = 0; i < noteNumbers.Length; i++) {
+                imageStream = new MemoryStream();
                 fileOpener = File.Open($@"C:\Users\Thomas\source\repos\A-level Coursework\Desktop Programs\Coursework Project\Coursework Project\Resources\{fileNames[i]}.png", FileMode.Open);
                 fileOpener.CopyTo(imageStream);
 
@@ -164,6 +165,9 @@ namespace Coursework_Project {
                 if (!parseSucessful) {
                     MessageBox.Show($"The file could not be Loaded. Please try another file. {errorString}","MIDI Parse Error");
                 }
+
+                lblLoadedExercise.Text = (string)dgvExercises.SelectedRows[0].Cells["FileName"].Value;
+
 
             } catch (Exception ex) {
                 MessageBox.Show($"Sorry, that file could not be opened. Please try again or select a different Exercise. {ex}");
@@ -345,7 +349,7 @@ namespace Coursework_Project {
 
             //Un-grey out the buttons to allow the people to choose other forms
             btnLookAtMusic.Enabled = true;
-            btnPractice.Enabled = true;
+            
             btnTest.Enabled = true;
 
             return true;
