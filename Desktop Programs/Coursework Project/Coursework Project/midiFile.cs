@@ -1,9 +1,6 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.Data.SqlClient;
 using System.Data;
@@ -313,6 +310,8 @@ namespace Coursework_Project {
                                     bitmapToDraw = Properties.Resources.NotFound;       //show that the image cannot be found
                                 }
 
+                                fingeringToDraw = new Bitmap(10,10);
+
                                 //If the fingering diagram cannot be found in the dictionary, then display a note found in it's place
                                 if (!noteFingeringDict.TryGetValue(p_listOfNotes[i].noteNum, out fingeringToDraw)) {
                                     fingeringToDraw = Properties.Resources.NotFound;
@@ -321,6 +320,7 @@ namespace Coursework_Project {
                             } else {        //Else, note is a rest and a rest should be drawn
 
                             }
+
                             //Draw the right note in the right place
                             currentStaffGraphics.DrawImage(bitmapToDraw, barWidth / (notesToDrawInBar != 0 ? notesToDrawInBar : 1) * (currentDrawingNote) + barOffsets[currentBar], bottomYPos - staveLocation * staveValue);
 
@@ -341,6 +341,9 @@ namespace Coursework_Project {
 
                 currentStaff = Properties.Resources.StaffWithBars;
                 currentStaffGraphics = Graphics.FromImage(currentStaff);
+
+                currentGeneratedFingering = new Bitmap(currentStaff.Width, currentStaff.Height);
+                currentGeneratedFingeringGraphics = Graphics.FromImage(currentGeneratedFingering);
 
             }
         

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Data;
-using System.Data.Sql;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Drawing;
-using System.Drawing.Imaging;
+
 
 namespace Coursework_Project {
 
@@ -531,10 +529,6 @@ namespace Coursework_Project {
 
             return currentValue;
         }
-
-
-
-
 
 #endregion
 
