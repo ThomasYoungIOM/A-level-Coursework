@@ -275,7 +275,7 @@ namespace FFT_Testing {
         private void btnSimFreq_Click(object sender, EventArgs e) {
 
             for (int i = 0; i < buffer.Length -1 ; i+=2) {
-                buffer[i] = Convert.ToByte(((Math.Sin(Math.PI*((44100 + i) / (44100 / Double.Parse(txtFreqToSim.Text)))))+1) * 127.5);
+                buffer[i] = Convert.ToByte((Math.Sin(Math.PI*((44100 + i) / (44100 / Double.Parse(txtFreqToSim.Text))))+1) * 127.5);
 
                 buffer[i + 1] = buffer[i];  
 
